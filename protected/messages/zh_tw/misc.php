@@ -14,7 +14,7 @@ return array(
 'ZongJie'=>'總結',
 'Add'=>'新增',
 'Add New'=>'新增',
-'Add Record'=>'新增紀錄',
+'New Record'=>'新增紀錄',
 'Add Another'=>'新增另一紀錄',
 'Record'=>'記錄',
 '-- None --'=>'-- 無 --',
@@ -87,6 +87,12 @@ return array(
 'Status'=>'狀態',
 'Mark Read'=>'標記已讀',
 'Go Top'=>'往頁頂',
+'Announcement'=>'公告',
+
+'Latest month'=>'1個月內',
+'3 months'=>'3個月內',
+'6 months'=>'6個月內',
+'1 year'=>'1年內',
 );
 
 ?>

@@ -15,7 +15,7 @@ return array(
     'ZongJie'=>'总结',
 	'Add'=>'新增',
 	'Add New'=>'新增',
-	'Add Record'=>'新增纪录',
+	'New Record'=>'新增纪录',
 	'Add Another'=>'新增另一纪录',
 	'Record'=>'记录',
 	'-- None --'=>'-- 无 --',
@@ -88,6 +88,12 @@ return array(
 	'Status'=>'状态',
 	'Mark Read'=>'标记已读',
 	'Go Top'=>'往页顶',
+	'Announcement'=>'公告',
+
+	'Latest month'=>'1个月內',
+	'3 months'=>'3个月內',
+	'6 months'=>'6个月內',
+	'1 year'=>'1年內',
 );
 
 ?>
