@@ -30,7 +30,7 @@ class ServiceController extends Controller
 			),
 */
 			array('allow', 
-				'actions'=>array('new','edit','amend','suspend','resume','renew','save','delete','terminate','fileupload','fileremove','filedownload','getcusttypelist'),
+				'actions'=>array('new','edit','amend','suspend','resume','renew','save','delete','terminate','fileupload','fileremove','filedownload'),
 				'expression'=>array('ServiceController','allowReadWrite'),
 			),
 			array('allow', 
@@ -374,15 +374,6 @@ class ServiceController extends Controller
 				throw new CHttpException(404,'Record not found.');
 		}
 	}
-
-    public function actionGetcusttypelist($group) {
-        $rtn = '';
-        $rows = ServiceForm::getCustTypeList($group);
-        foreach ($rows as $key=>$value) {
-            $rtn .= "<option value=$key>$value</option>";
-        }
-        echo $rtn;
-    }
 	
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.

@@ -404,19 +404,6 @@ class ServiceForm extends CFormModel
 		}
 	}
 
-    public function getCustTypeList($a=1) {
-        $city = Yii::app()->user->city();
-        $rtn = array(''=>Yii::t('misc','-- None --'));
-        $sql = "select id, cust_type_name from swo_customer_type_twoname where  cust_type_id=$a order by cust_type_name";
-        $rows = Yii::app()->db->createCommand($sql)->queryAll();
-        if (count($rows) > 0) {
-            foreach($rows as $row) {
-                $rtn[$row['id']] = $row['cust_type_name'];
-            }
-        }
-        return $rtn;
-    }
-
 	public function getStatusDesc() {
 		return General::getStatusDesc($this->status);
 	}
