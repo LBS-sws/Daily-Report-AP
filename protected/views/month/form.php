@@ -72,7 +72,7 @@ $this->pageTitle=Yii::app()->name . ' - Month Report Form';
 		$name_prefix = $modelName.'[record]['.$key.']';
 		echo '<div class="form-group">';
 		echo '<div class="col-sm-4">';
-		echo  TbHtml::label($cnt.'. '.$data['name'].($data['updtype']!='M' ? ' *' : ''),$id_prefix.'_datavalue');
+		echo  TbHtml::label($cnt.'. '.Yii::t('month',$data['name']).($data['updtype']!='M' ? ' *' : ''),$id_prefix.'_datavalue');
 		echo '</div>';
 		echo '<div class="col-sm-3">';
 		echo TbHtml::textField($name_prefix.'[datavalue]',$data['datavalue'],

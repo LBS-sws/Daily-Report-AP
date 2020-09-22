@@ -67,7 +67,7 @@ $this->pageTitle=Yii::app()->name . ' - Month Report';
     <table class="tftable" border="1">
         <tr><th colspan="2">管理项目</th><?php $i=0; for($i=0;$i<$model->ccuser;$i++){?><th><?php echo $model->year[$i]."/".$model->month[$i]?></th><?php }?><th>定义</th></tr>
         <?php for ($a=0;$a<count($model->five[0]);$a++){?>
-        <tr><td  style="width: 13%;"></td><td  style="width: 20%;"><?php echo $model->five[0][$a]['name'];?></td><?php $i=0; for($i=0;$i<$model->ccuser;$i++){?><td><?php echo $model->five[$i][$a]['data_value'];?></td><?php }?><td style="width: 15%;"></td></tr>
+        <tr><td  style="width: 13%;"></td><td  style="width: 20%;"><?php echo Yii::t('month',$model->five[0][$a]['name']);?></td><?php $i=0; for($i=0;$i<$model->ccuser;$i++){?><td><?php echo $model->five[$i][$a]['data_value'];?></td><?php }?><td style="width: 15%;"></td></tr>
         <?php }?>
 
         <tr><td style="width: 13%;">总分(100分）：</td><td style="width: 20%;"></td><?php for ($a=0;$a<count($model->excel);$a++){ echo "<td>".$model->excel[$a]['f74']."</td>";}?><td style="width: 15%;"></td></tr>
