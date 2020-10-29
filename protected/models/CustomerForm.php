@@ -13,9 +13,6 @@ class CustomerForm extends CFormModel
 	public $nature;
 	public $address;
 	public $tax_reg_no;
-    public $delivery_company;
-    public $delivery_tel;
-    public $delivery_address;
 
 	public $service = array();
 
@@ -35,9 +32,6 @@ class CustomerForm extends CFormModel
 			'cont_phone'=>Yii::t('customer','Contact Phone'),
 			'address'=>Yii::t('customer','Address'),
             'tax_reg_no'=>Yii::t('code','SSM No.'),
-            'delivery_company'=>Yii::t('customer','Delivery Company'),
-            'delivery_tel'=>Yii::t('customer','Delivery Tel'),
-            'delivery_address'=>Yii::t('customer','Delivery Address'),
 		);
 	}
 
@@ -47,7 +41,7 @@ class CustomerForm extends CFormModel
 	public function rules()
 	{
 		return array(
-			array('id, full_name, cont_name, cont_phone, address, tax_reg_no,delivery_company,delivery_tel,delivery_address','safe'),
+			array('id, full_name, cont_name, cont_phone, address, tax_reg_no','safe'),
 			array('name, code','required'),
 /*
 			array('code','unique','allowEmpty'=>true,
@@ -96,9 +90,6 @@ class CustomerForm extends CFormModel
 				$this->cont_phone = $row['cont_phone'];
 				$this->address = $row['address'];
 				$this->tax_reg_no = $row['tax_reg_no'];
-                $this->delivery_company = $row['delivery_company'];
-                $this->delivery_tel = $row['delivery_tel'];
-                $this->delivery_address = $row['delivery_address'];
 				break;
 			}
 		}
@@ -129,10 +120,10 @@ class CustomerForm extends CFormModel
 				break;
 			case 'new':
 				$sql = "insert into swo_company(
-							code, name, full_name, tax_reg_no, cont_name, cont_phone, address,delivery_company,delivery_tel,delivery_address,
+							code, name, full_name, tax_reg_no, cont_name, cont_phone, address,
 							city, luu, lcu
 						) values (
-							:code, :name, :full_name, :tax_reg_no, :cont_name, :cont_phone, :address,:delivery_company,:delivery_tel,:delivery_address,
+							:code, :name, :full_name, :tax_reg_no, :cont_name, :cont_phone, :address,
 							:city, :luu, :lcu
 						)";
 				break;
@@ -144,10 +135,7 @@ class CustomerForm extends CFormModel
 							tax_reg_no = :tax_reg_no, 
 							cont_name = :cont_name, 
 							cont_phone = :cont_phone, 
-							address = :address, 
-							delivery_company = :delivery_company,
-							delivery_tel = :delivery_tel,
-							delivery_address = :delivery_address,
+							address = :address, 						
 							luu = :luu 
 						where id = :id and city = :city
 						";
@@ -174,12 +162,6 @@ class CustomerForm extends CFormModel
 			$command->bindParam(':cont_phone',$this->cont_phone,PDO::PARAM_STR);
 		if (strpos($sql,':address')!==false)
 			$command->bindParam(':address',$this->address,PDO::PARAM_STR);
-        if (strpos($sql,':delivery_company')!==false)
-            $command->bindParam(':delivery_company',$this->delivery_company,PDO::PARAM_STR);
-        if (strpos($sql,':delivery_tel')!==false)
-            $command->bindParam(':delivery_tel',$this->delivery_tel,PDO::PARAM_STR);
-        if (strpos($sql,':delivery_address')!==false)
-            $command->bindParam(':delivery_address',$this->delivery_address,PDO::PARAM_STR);
 		if (strpos($sql,':city')!==false)
 			$command->bindParam(':city',$city,PDO::PARAM_STR);
 		if (strpos($sql,':lcu')!==false)

@@ -115,32 +115,6 @@ $this->pageTitle=Yii::app()->name . ' - Customer Form';
 					); ?>
 				</div>
 			</div>
-            <div class="form-group">
-                <?php echo $form->labelEx($model,'delivery_company',array('class'=>"col-sm-2 control-label")); ?>
-                <div class="col-sm-7">
-                    <?php echo $form->textField($model, 'delivery_company',
-                        array('size'=>40,'maxlength'=>100,'readonly'=>($model->scenario=='view'))
-                    ); ?>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <?php echo $form->labelEx($model,'delivery_tel',array('class'=>"col-sm-2 control-label")); ?>
-                <div class="col-sm-3">
-                    <?php echo $form->textField($model, 'delivery_tel',
-                        array('size'=>15,'maxlength'=>30,'readonly'=>($model->scenario=='view'))
-                    ); ?>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <?php echo $form->labelEx($model,'delivery_address',array('class'=>"col-sm-2 control-label")); ?>
-                <div class="col-sm-7">
-                    <?php echo $form->textArea($model, 'delivery_address',
-                        array('rows'=>2,'cols'=>50,'maxlength'=>1000,'readonly'=>($model->scenario=='view'))
-                    ); ?>
-                </div>
-            </div>
 
 		</div>
 	</div>
