@@ -30,7 +30,7 @@ $this->pageTitle=Yii::app()->name . ' - Month Report';
 
         </div>
         <div class="btn-group pull-right" role="group">
-            <?php echo TbHtml::button('<span class="fa fa-download"></span> '.Yii::t('misc','xiazai'), array(
+            <?php echo TbHtml::button('<span class="fa fa-download"></span> '.Yii::t('misc','Download'), array(
                 'submit'=>Yii::app()->createUrl('comprehensive/downs')));
             ?>
         </div>

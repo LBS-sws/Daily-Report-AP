@@ -28,10 +28,10 @@ $this->pageTitle=Yii::app()->name . ' - Month Report Form';
 				'submit'=>Yii::app()->createUrl('month/index')));
 		?>
 
-			<?php echo TbHtml::button('<span class="fa fa-download"></span> '.Yii::t('misc','xiazai'), array(
+			<?php echo TbHtml::button('<span class="fa fa-download"></span> '.Yii::t('misc','Download'), array(
 				'submit'=>Yii::app()->createUrl('month/xiazai')));
 			?>
-        <?php echo TbHtml::button('<span class="fa fa-file-o"></span> '.Yii::t('misc','ZongJie'), array(
+        <?php echo TbHtml::button('<span class="fa fa-file-o"></span> '.Yii::t('misc','Summary'), array(
             'submit'=>Yii::app()->createUrl('month/summarize',array('index'=> $model->id,'city'=>$_GET['city']))));
         ?>
 	</div>
