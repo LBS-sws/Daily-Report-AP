@@ -15,8 +15,8 @@ class ServiceList extends CListPageModel
 			'nature_desc'=>Yii::t('service','Nature'),
 			'service'=>Yii::t('service','Service'),
 			'cont_info'=>Yii::t('service','Contact'),
-            'status'=>Yii::t('service','Record Type'),
-            'status_dt'=>Yii::t('service','Record Date'),
+			'status'=>Yii::t('service','Record Type'),
+			'status_dt'=>Yii::t('service','Record Date'),
 			'city_name'=>Yii::t('misc','City'),
 		);
 	}
@@ -72,13 +72,14 @@ class ServiceList extends CListPageModel
 					break;
 			}
 		}
+		$clause .= $this->getDateRangeCondition('a.status_dt');
 		
 		$order = "";
 		if (!empty($this->orderField)) {
 			$order .= " order by ".$this->orderField." ";
 			if ($this->orderType=='D') $order .= "desc ";
 		}else{
-            $order ="order by id desc";
+            $order ="order by status_dt desc";
         }
 
 		$sql = $sql2.$clause;

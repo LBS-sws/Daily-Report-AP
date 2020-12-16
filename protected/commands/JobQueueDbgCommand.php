@@ -36,6 +36,7 @@ class JobQueueDbgCommand extends CConsoleCommand {
 				echo $mesg;
 				
 				$out = $this->genReport($id, $param, $format);
+echo "\n genReport";
 				if (!empty($out)) {
 					$sts = 'F';
 					switch ($format) {
@@ -351,6 +352,7 @@ EOF;
 			case 'EXCEL':
 				$rptdata = array();
 				foreach ($rpt_array as $rpt_id=>$rpt_name) {
+echo "\n".$rpt_name;
 					$criteria->id = $rpt_id;
 					$criteria->name = $rpt_name;
 					$model = $this->getModelById($criteria->id);
@@ -372,6 +374,7 @@ EOF;
 				$excel = new MyExcel(); 
 				$excel->init();
 				foreach ($rptdata as $report) {
+var_dump($report);
 					$excel->SetHeaderTitle($report['headertitle']);
 					$excel->SetHeaderString($report['headerstring']);
 

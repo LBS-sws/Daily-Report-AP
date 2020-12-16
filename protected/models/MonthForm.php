@@ -966,8 +966,8 @@ WHERE hdr_id = '".$model['id']."'";
             $arr[] = $a7[0]['email'];
         }
         $a=General::dedupToEmailList($arr);
-        $sql = "select a.year_no, a.month_no, b.id, b.hdr_id, b.data_field, b.data_value, c.name, c.upd_type, c.field_type, b.manual_input , c.excel_row  
-				from swo_monthly_hdr a, swo_monthly_dtl b, swo_monthly_field c 
+        $sql = "select a.year_no, a.month_no, b.id, b.hdr_id, b.data_field, b.data_value, c.name, c.upd_type, c.field_type, b.manual_input , c.excel_row
+				from swo_monthly_hdr a, swo_monthly_dtl b, swo_monthly_field c
 				where a.id=$index and a.city='$city'
 				and a.id=b.hdr_id and b.data_field=c.code
 				and c.status='Y'
@@ -1007,7 +1007,7 @@ WHERE hdr_id = '".$model['id']."'";
             $sqlb="INSERT INTO swo_queue_user (queue_id,username) VALUES ('".$qid."','".$b[0]."'),('".$qid."','".$b[1]."'),('".$qid."','".$b[2]."'),('".$qid."','".$b[3]."'),('".$qid."','".$b[4]."'),('".$qid."','".$b[5]."')";
         }
         $aa = Yii::app()->db->createCommand($sqlb)->execute();
-        $from_addr = "it@lbsgroup.com.hk";
+        $from_addr = Yii::app()->user->email();
         $to_addr=json_encode($a);
         $subject = "月报表总汇-" .$time;
         $description = $time."<br/>月报表总分：".$total."    &nbsp;&nbsp;&nbsp;&nbsp;城市：".$cityname[0]['name']."<br/>内容分析";
@@ -1024,6 +1024,16 @@ WHERE hdr_id = '".$model['id']."'";
             'description' => $description,//郵件副題
             'message' => $message,//郵件內容（html）
             'status' => "P",
+            'lcu' => $lcu,
+            'lcd' => date('Y-m-d H:i:s'),
+        ));
+        $times = date("Y-m-d H:i:s", strtotime($model['year_no'].'-'.$model['month_no']));
+        $aaa = Yii::app()->db->createCommand()->insert("swo_month_email", array(
+            'request_dt' => $times,
+            'from_addr' => $from_addr,
+            'subject' => $subject,//郵件主題
+            'city' => $city,//城市
+            'description' => $description,//郵件副題
             'lcu' => $lcu,
             'lcd' => date('Y-m-d H:i:s'),
         ));
@@ -1093,7 +1103,15 @@ WHERE hdr_id = '".$model['id']."'";
 
         $objPHPExcel = $objReader->load($path);
         foreach ($model->record as $arr ){
-            $objPHPExcel->getActiveSheet()->setCellValue('B'.$arr['excel_row'], $arr['datavalueold']) ;
+            if(count($model->record)==70){//因为洗涤液插入中间，之前版本需要重新调整
+                $objPHPExcel->getActiveSheet()->setCellValue('B'.$arr['excel_row'], $arr['datavalueold']) ;
+            }else{
+                if($arr['excel_row']>59){
+                    $arr['excel_row']=$arr['excel_row']-2;
+                }
+                $objPHPExcel->getActiveSheet()->setCellValue('B'.$arr['excel_row'], $arr['datavalueold']) ;
+            }
+
         }
 //print_r("<pre>");
 //        print_r(count($model->record));

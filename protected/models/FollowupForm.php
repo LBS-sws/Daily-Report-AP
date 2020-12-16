@@ -46,29 +46,29 @@ class FollowupForm extends CFormModel
 			'company_name'=>Yii::t('followup','Customer'),
 			'content'=>Yii::t('followup','Content'),
 			'cont_info'=>Yii::t('followup','Contact'),
-            'resp_staff'=>Yii::t('followup','Resp. Sales'),
-            'resp_tech'=>Yii::t('followup','Technician'),
+			'resp_staff'=>Yii::t('followup','Resp. Sales'),
+			'resp_tech'=>Yii::t('followup','Technician'),
 			'mgr_notify'=>Yii::t('followup','Notify Manager'),
 			'sch_dt'=>Yii::t('followup','Schedule Date').' '.Yii::t('misc','(Y/M/D)'),
-            'follow_staff'=>Yii::t('followup','Follow-up Tech.'),
-            'leader'=>Yii::t('followup','Leader or above'),
-            'follow_tech'=>Yii::t('followup','Previous Follow-up Tech.'),
+			'follow_staff'=>Yii::t('followup','Follow-up Tech.'),
+			'leader'=>Yii::t('followup','Leader or above'),
+			'follow_tech'=>Yii::t('followup','Previous Follow-up Tech.'),
 			'fin_dt'=>Yii::t('followup','Finish Date').' '.Yii::t('misc','(Y/M/D)'),
 			'follow_action'=>Yii::t('followup','Follow-up Action'),
-            'mgr_talk'=>Yii::t('followup','Update with Tech.'),
-            'change'=>Yii::t('followup','Change Follow-up Tech.'),
-            'tech_notify'=>Yii::t('followup','Staff of Change Arrangement.'),
+			'mgr_talk'=>Yii::t('followup','Update with Tech.'),
+			'change'=>Yii::t('followup','Change Follow-up Tech.'),
+			'tech_notify'=>Yii::t('followup','Staff of Change Arrangement.'),
 			'svc_next_dt'=>Yii::t('followup','Next Service Date'),
 			'svc_fin_dt'=>Yii::t('followup','Finish Date').' '.Yii::t('misc','(Y/M/D)'),
-            'svc_call_dt'=>Yii::t('followup','Follow up Date').' '.Yii::t('misc','(Y/M/D)'),
+			'svc_call_dt'=>Yii::t('followup','Follow up Date').' '.Yii::t('misc','(Y/M/D)'),
 			'svc_cust_name'=>Yii::t('followup','Customer Name'),
 			'svc_comment'=>Yii::t('followup','Comment'),
 			'fp_fin_dt'=>Yii::t('followup','Finish Date').' '.Yii::t('misc','(Y/M/D)'),
 			'fp_call_dt'=>Yii::t('followup','Follow up Date').' '.Yii::t('misc','(Y/M/D)'),
 			'fp_cust_name'=>Yii::t('followup','Customer Name'),
 			'fp_comment'=>Yii::t('followup','Comment'),
-            'mcard_remarks'=>Yii::t('followup','Contend of Update to Job Card'),
-            'mcard_staff'=>Yii::t('followup','Staff of Update Job Card'),
+			'mcard_remarks'=>Yii::t('followup','Contend of Update to Job Card'),
+			'mcard_staff'=>Yii::t('followup','Staff of Update Job Card'),
 		);
 	}
 
@@ -145,11 +145,19 @@ class FollowupForm extends CFormModel
 		$transaction=$connection->beginTransaction();
 		try {
 			$this->saveFollowup($connection);
+			$this->updateDmsUnitedLink($connection);
 			$transaction->commit();
 		}
 		catch(Exception $e) {
 			$transaction->rollback();
 			throw new CHttpException(404,'Cannot update.');
+		}
+	}
+
+	protected function updateDmsUnitedLink(&$connection) {
+		if ($this->scenario=='delete') {
+			$sql = "delete from swo_followup_dms_united where dms_id=".$this->id;
+			$connection->createCommand($sql)->execute();
 		}
 	}
 

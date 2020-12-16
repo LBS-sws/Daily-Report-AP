@@ -13,8 +13,8 @@ class FollowupList extends CListPageModel
 			'entry_dt'=>Yii::t('followup','Date'),
 			'type'=>Yii::t('followup','Type'),
 			'company_name'=>Yii::t('followup','Customer'),
-            'resp_staff'=>Yii::t('followup','Resp. Sales'),
-            'resp_tech'=>Yii::t('followup','Technician'),
+			'resp_staff'=>Yii::t('followup','Resp. Sales'),
+			'resp_tech'=>Yii::t('followup','Technician'),
 			'content'=>Yii::t('followup','Content'),
 			'cont_info'=>Yii::t('followup','Contact'),
 			'city_name'=>Yii::t('misc','City'),
@@ -62,13 +62,14 @@ class FollowupList extends CListPageModel
 					break;
 			}
 		}
+		$clause .= $this->getDateRangeCondition('a.entry_dt');
 		
 		$order = "";
 		if (!empty($this->orderField)) {
 			$order .= " order by ".$this->orderField." ";
 			if ($this->orderType=='D') $order .= "desc ";
 		}else{
-            $order ="order by id desc";
+            $order ="order by a.entry_dt desc";
         }
 
 		$sql = $sql2.$clause;

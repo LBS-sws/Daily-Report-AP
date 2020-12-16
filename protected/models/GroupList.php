@@ -46,7 +46,11 @@ class GroupList extends CListPageModel
 		
 		$order = "";
 		if (!empty($this->orderField)) {
-			$order .= " order by ".$this->orderField." ";
+			if ($this->orderField=='system_name') {
+				$order .= " order by system_id ";
+			} else {
+				$order .= " order by ".$this->orderField." ";
+			}
 			if ($this->orderType=='D') $order .= "desc ";
 		}
 

@@ -11,7 +11,7 @@ return array(
 'Paid Amt'=>'服務金額',
 'Installation Fee'=>'裝機金額',
 'Resp. Sales'=>'業務員',
-'OtherSalesman'=>'跨區業務員',
+'OtherSalesman'=>'被跨區業務員',
 'Sign Date'=>'簽約日期',
 'Contract End Date'=>'合同終止日期',
 'Contract Period'=>'合同年限(月)',
@@ -48,8 +48,10 @@ return array(
 'Return Equip. Qty'=>'拆回數量',
 
 'Diff. Qty'=>'相差數量',
-'Diff. btw Contract Date'=>'簽約跟裝機器日期差',
-'Diff. btw First Service Date'=>'簽約跟首次日期差',
+//'Diff. btw Contract Date'=>'簽約跟裝機器日期差',
+//'Diff. btw First Service Date'=>'簽約跟首次日期差',
+'Diff. btw Contract Date'=>'新增日期跟裝機器日期差',
+'Diff. btw First Service Date'=>'新增日期跟首次日期差',
 
 'Monthly'=>'月金額',
 'Yearly'=>'年金額',
@@ -113,5 +115,8 @@ return array(
 'Expiry Date'=>'到期日',
 
 'Pieces'=>'產品數量',
+'Prepay Month'=>'預付月數',
+'Prepay Start'=>'預付起始月',
+'Contract No'=>'合同編號',
 );
 ?>

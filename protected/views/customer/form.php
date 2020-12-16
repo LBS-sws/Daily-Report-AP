@@ -32,11 +32,11 @@ $this->pageTitle=Yii::app()->name . ' - Customer Form';
 			}
 		?>
 		<?php echo TbHtml::button('<span class="fa fa-reply"></span> '.Yii::t('misc','Back'), array(
-				'submit'=>Yii::app()->createUrl('customer/index'))); 
+				'submit'=>Yii::app()->createUrl('customer/index')));
 		?>
 <?php if ($model->scenario!='view'): ?>
 			<?php echo TbHtml::button('<span class="fa fa-upload"></span> '.Yii::t('misc','Save'), array(
-				'submit'=>Yii::app()->createUrl('customer/save'))); 
+				'submit'=>Yii::app()->createUrl('customer/save')));
 			?>
 <?php endif ?>
 <?php if ($model->scenario=='edit'): ?>
@@ -113,6 +113,28 @@ $this->pageTitle=Yii::app()->name . ' - Customer Form';
 					<?php echo $form->textArea($model, 'address', 
 						array('rows'=>2,'cols'=>50,'maxlength'=>1000,'readonly'=>($model->scenario=='view'))
 					); ?>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<?php echo $form->labelEx($model,'group_id',array('class'=>"col-sm-2 control-label")); ?>
+				<div class="col-sm-2">
+					<?php echo $form->textField($model, 'group_id', 
+						array('maxlength'=>20,'readonly'=>($model->scenario=='view'))
+					); ?>
+				</div>
+				<div class="col-sm-5">
+					<?php echo $form->textField($model, 'group_name', 
+						array('maxlength'=>200,'readonly'=>($model->scenario=='view'))
+					); ?>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<?php echo $form->labelEx($model,'status',array('class'=>"col-sm-2 control-label")); ?>
+				<div class="col-sm-2">
+					<?php echo $form->dropDownList($model, 'status', $model->getStatusList(), array('disabled'=>($model->scenario=='view'))); 
+					?>
 				</div>
 			</div>
 

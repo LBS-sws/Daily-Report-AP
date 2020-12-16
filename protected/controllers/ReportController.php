@@ -26,7 +26,7 @@ class ReportController extends Controller
 				'users'=>array('@'),
 			),
 */
-			array('allow','actions'=>array('all'),'expression'=>array('ReportController','allowAll')),
+			array('allow','actions'=>array('all','allsave'),'expression'=>array('ReportController','allowAll')),
 			array('allow','actions'=>array('custnew'),'expression'=>array('ReportController','allowCustnew')),
 			array('allow','actions'=>array('custrenew'),'expression'=>array('ReportController','allowCustrenew')),
 			array('allow','actions'=>array('custamend'),'expression'=>array('ReportController','allowCustamend')),
@@ -156,6 +156,7 @@ class ReportController extends Controller
 		$this->function_id = 'B11';
 		Yii::app()->session['active_func'] = $this->function_id;
 		$this->showUIFeedback('all', 'All Daily Reports');
+
 	}
 
 	protected function genAll($criteria) {
@@ -176,7 +177,29 @@ class ReportController extends Controller
 		$this->addQueueItem('RptAll', $criteria, 'A3', $rptname);
 		Dialog::message(Yii::t('dialog','Information'), Yii::t('dialog','Report submitted. Please go to Report Manager to retrieve the output.'));
 	}
-	
+
+    public function actionAllSave() {
+        $model = new ReportForm();
+        $model->attributes = $_POST['ReportForm'];
+			if ($model->validate()) {
+				$sql="select * from swo_fixed_queue_value where city = '".$model['city']."'";
+                $records = Yii::app()->db->createCommand($sql)->queryAll();
+                $city=$model['city'];
+				$touser=$model['touser'];
+				$ccuser=json_encode($model['ccuser']);
+             	if(empty($records)){
+                    $sql1="insert into swo_fixed_queue_value (city, touser, ccuser)
+						values('$city', '$touser', '$ccuser')";
+                    $records = Yii::app()->db->createCommand($sql1)->execute();
+				}else{
+             		$sql1="update swo_fixed_queue_value set touser = '$touser',ccuser = '$ccuser' where city='$city'";
+                    $records = Yii::app()->db->createCommand($sql1)->execute();
+				}
+			}
+        Dialog::message(Yii::t('dialog','Information'), Yii::t('dialog','Save Done'));
+        $this->render('form_feedback',array('model'=>$model,));
+    }
+
 /*
 	protected function genAll($criteria) {
 		$criteria->name = 'Customer Report - New';
@@ -492,6 +515,12 @@ class ReportController extends Controller
 		$model->name = $name;
 		if (Yii::app()->user->isSingleCity())
 			$model->city = Yii::app()->user->city();
+			$sql="select * from swo_fixed_queue_value where city = '".$model->city ."'";
+			$records = Yii::app()->db->createCommand($sql)->queryRow();
+			if(!empty($records)){
+                $model->touser=$records['touser'];
+                $model->ccuser=json_decode($records['ccuser']);
+			}
 //		else {
 //			$items = explode(",",str_replace("'","",Yii::app()->user->city_allow()));
 //			$model->city = $items[0];
