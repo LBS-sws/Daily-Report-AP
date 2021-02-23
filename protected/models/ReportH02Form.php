@@ -8,10 +8,10 @@ class ReportH02Form extends CReportForm
 	
 	protected function labelsEx() {
 		return array(
-			'staffs'=>Yii::t('report','Staffs'),
-            'city'=>Yii::t('code','City'),
-            'from'=>Yii::t('code','From'),
-            'to'=>Yii::t('code','To'),
+				'staffs'=>Yii::t('report','Staffs'),
+                'city'=>Yii::t('code','City'),
+                 'from'=>Yii::t('code','From'),
+                 'to'=>Yii::t('code','To'),
 			);
 	}
 	
@@ -83,6 +83,9 @@ class ReportH02Form extends CReportForm
 
             for($i=0;$i<$model->ccuser;$i++){
                 foreach ($model->five[$i] as $arr ){
+                    if($arr['excel_row']>59){
+                        $arr['excel_row']=$arr['excel_row']-2;
+                    }
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].$arr['excel_row'], $arr['data_value']) ;
                 }
                 for($a=80;$a<132;$a++){
@@ -149,7 +152,7 @@ class ReportH02Form extends CReportForm
                 }
                 $objPHPExcel->getActiveSheet()->getColumnDimension($excel_m[$i])->setWidth(17);
             }
-        }if(count($model->five[0])==70){
+        }elseif(count($model->five[0])==70){
             $path = Yii::app()->basePath.'/commands/template/month_more_xidi.xlsx';
             $objPHPExcel = $objReader->load($path);
             $excel_m=array('C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
@@ -181,7 +184,7 @@ class ReportH02Form extends CReportForm
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'90',$model->excel[$i]['c84']."(".$model->excel[$i]['e84'].")") ;
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'91',$model->excel[$i]['c85']."(".$model->excel[$i]['e85'].")") ;
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'92',$model->excel[$i]['c86']."(".$model->excel[$i]['e86'].")") ;
-                    $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'93',$model->excel[$i]['c88']."(".$model->excel[$i]['e88'].")") ;
+                    $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'94',$model->excel[$i]['c88']."(".$model->excel[$i]['e88'].")") ;
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'95',$model->excel[$i]['c89']."(".$model->excel[$i]['e89'].")") ;
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'96',$model->excel[$i]['c90']."(".$model->excel[$i]['e90'].")") ;
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].'97',$model->excel[$i]['c91']."(".$model->excel[$i]['e91'].")") ;
@@ -229,8 +232,7 @@ class ReportH02Form extends CReportForm
                 }
                 $objPHPExcel->getActiveSheet()->getColumnDimension($excel_m[$i])->setWidth(17);
             }
-        }
-        else{
+        }elseif(count($model->five[0])==65){
             $path = Yii::app()->basePath.'/commands/template/month_more_ones.xlsx';
             $objPHPExcel = $objReader->load($path);
             $excel_m=array('C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
@@ -245,6 +247,9 @@ class ReportH02Form extends CReportForm
 
             for($i=0;$i<$model->ccuser;$i++){
                 foreach ($model->five[$i] as $arr ){
+                    if($arr['excel_row']>59){
+                        $arr['excel_row']=$arr['excel_row']-2;
+                    }
                     $objPHPExcel->getActiveSheet()->setCellValue($excel_m[$i].$arr['excel_row'], $arr['data_value']) ;
                 }
                 for($a=76;$a<125;$a++){

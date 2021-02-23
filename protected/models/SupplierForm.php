@@ -178,7 +178,7 @@ class SupplierForm extends CListPageModel
         $sql1 = "select a.id, a.req_dt, e.trans_type_desc, a.item_desc, a.payee_name,a.payee_type,f.field_value,
 					b.name as city_name, a.amount, a.status, f.field_value as ref_no, a.req_user, 
 					g.field_value as int_fee,t.acct_name,
-					(select case workflow$suffix.RequestStatus(a.city,'PAYMENT',a.id,a.req_dt)
+					(select case workflow$suffix.RequestStatus('PAYMENT',a.id,a.req_dt)
 							when '' then '0DF' 
 							when 'PC' then '1PC' 
 							when 'PA' then '2PA' 
@@ -186,7 +186,7 @@ class SupplierForm extends CListPageModel
 							when 'PS' then '4PS' 
 							when 'ED' then '5ED' 
 					end) as wfstatus,
-					workflow$suffix.RequestStatusDesc(a.city, 'PAYMENT',a.id,a.req_dt) as wfstatusdesc
+					workflow$suffix.RequestStatusDesc('PAYMENT',a.id,a.req_dt) as wfstatusdesc
 				from account$suffix.acc_request a inner join security$suffix.sec_city b on a.city=b.code
 					inner join account$suffix.acc_trans_type e on a.trans_type_code=e.trans_type_code 
 					left outer join account$suffix.acc_request_info f on a.id=f.req_id and f.field_id='ref_no'
@@ -203,7 +203,7 @@ class SupplierForm extends CListPageModel
 					left outer join account$suffix.acc_request_info g on a.id=g.req_id and g.field_id='int_fee'
 				    left outer join account$suffix.acc_request_info h on a.id=h.req_id and h.field_id='acct_id' 
 				    left outer join account$suffix.acc_account t on t.id=h.field_value
-				where ((a.city in ($city) and workflow$suffix.RequestStatus(a.city, 'PAYMENT',a.id,a.req_dt)<>'') or a.req_user='$user')
+				where ((a.city in ($city) and workflow$suffix.RequestStatus('PAYMENT',a.id,a.req_dt)<>'') or a.req_user='$user')
 				and e.trans_cat='OUT' and a.payee_id=".$row['id']." and a.payee_type='S'    
 			";
         $clause = "";
@@ -304,8 +304,8 @@ class SupplierForm extends CListPageModel
         $user = Yii::app()->user->id;
         $city = Yii::app()->user->city_allow();
         $sql = "select *,  
-				workflow$suffix.RequestStatus(a.city, 'PAYMENT',id,req_dt) as wfstatus,
-				workflow$suffix.RequestStatusDesc(a.city, 'PAYMENT',id,req_dt) as wfstatusdesc,
+				workflow$suffix.RequestStatus('PAYMENT',id,req_dt) as wfstatus,
+				workflow$suffix.RequestStatusDesc('PAYMENT',id,req_dt) as wfstatusdesc,
 				docman$suffix.countdoc('payreq',id) as payreqcountdoc,
 				docman$suffix.countdoc('tax',id) as taxcountdoc
 				from account$suffix.acc_request where id=$index 

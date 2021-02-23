@@ -9,8 +9,9 @@ class RptCustterminate extends ReportData2 {
 			'reason'=>array('label'=>Yii::t('service','Reason'),'width'=>30,'align'=>'L'),
 			'amt_month'=>array('label'=>Yii::t('service','Monthly'),'width'=>15,'align'=>'C'),
 			'amt_year'=>array('label'=>Yii::t('service','Yearly'),'width'=>15,'align'=>'C'),
-			'salesman'=>array('label'=>Yii::t('service','Salesman'),'width'=>20,'align'=>'L'),
-            'technician'=>array('label'=>Yii::t('service','Technician'),'width'=>20,'align'=>'L'),
+			'salesman'=>array('label'=>Yii::t('service','Resp. Sales'),'width'=>20,'align'=>'L'),
+            'othersalesman'=>array('label'=>Yii::t('service','OtherSalesman'),'width'=>20,'align'=>'L'),
+            'technician'=>array('label'=>Yii::t('service','Resp. Tech.'),'width'=>20,'align'=>'L'),
 			'status_dt'=>array('label'=>Yii::t('service','Terminate Date'),'width'=>22,'align'=>'C'),
 			'sign_dt'=>array('label'=>Yii::t('service','Sign Date'),'width'=>18,'align'=>'C'),
 			'ctrt_period'=>array('label'=>Yii::t('service','Contract Period'),'width'=>10,'align'=>'C'),
@@ -18,7 +19,7 @@ class RptCustterminate extends ReportData2 {
 			'org_equip_qty'=>array('label'=>Yii::t('service','Org. Equip. Qty'),'width'=>18,'align'=>'C'),
 			'rtn_equip_qty'=>array('label'=>Yii::t('service','Return Equip. Qty'),'width'=>18,'align'=>'C'),
 			'diff_equip_qty'=>array('label'=>Yii::t('service','Diff. Qty'),'width'=>18,'align'=>'C'),
-			'remarks2'=>array('label'=>Yii::t('service','Remarks 2'),'width'=>30,'align'=>'L'),
+			'remarks2'=>array('label'=>Yii::t('service','Remarks'),'width'=>30,'align'=>'L'),
 		);
 	}
 
@@ -60,12 +61,13 @@ class RptCustterminate extends ReportData2 {
 				$temp['amt_month'] = number_format(($row['paid_type']=='1'?$row['amt_paid']:($row['paid_type']=='M'?$row['amt_paid']:round($row['amt_paid']/($row['ctrt_period']>0?$row['ctrt_period']:12),2))),2,'.','');
 				$temp['amt_year'] = number_format(($row['paid_type']=='1'?$row['amt_paid']:($row['paid_type']=='M'?$row['amt_paid']*($row['ctrt_period']<12&&!empty($row['ctrt_period'])?$row['ctrt_period']:12):$row['amt_paid'])),2,'.','');
 				$temp['salesman'] = $row['salesman'];
+                $temp['othersalesman'] = $row['othersalesman'];
                 $temp['technician'] = $row['technician'];
 				$temp['sign_dt'] = General::toDate($row['sign_dt']);
 				$temp['ctrt_period'] = $row['ctrt_period'];
 				$temp['ctrt_end_dt'] = General::toDate($row['ctrt_end_dt']);
 				$temp['reason'] = $row['reason'];
-				$temp['lud'] = General::toDate($row['lud']);
+				$temp['lud'] = General::toDate($row['lcd']);
 				$temp['org_equip_qty'] = $row['org_equip_qty'];
 				$temp['rtn_equip_qty'] = $row['rtn_equip_qty'];
 				$temp['diff_equip_qty'] = $row['rtn_equip_qty'] - $row['org_equip_qty'];

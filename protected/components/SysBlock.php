@@ -60,13 +60,16 @@ class SysBlock {
 		if($row){ //賬號有綁定的員工且有考核權限
 			$year = date("Y");
 			$day = date("m-d");
-			if($day>="11-01"){
-				$dateSql = " and ((b.year<=".($year-1).") or (b.year = $year and b.year_type = 1))";
-			}elseif ($day>="05-01"){
-			    $dateSql = " and b.year<=".($year-1);
-			}else{
-				$dateSql = " and ((b.year<=".($year-2).") or (b.year = ".($year-1)." and b.year_type = 1))";
-			}
+            $dateSql = " and b.id<0";
+            if($year>2020){
+                if($year == 2021&&$day>="02-01"&&$day<"08-01"){
+                    $dateSql = " and ((b.year<=".($year-1).") or (b.year = $year and b.year_type = 1))";
+                }elseif ($day>="08-01"){
+                    $dateSql = " and (b.year = $year and b.year_type = 1)";
+                }elseif ($day>="02-01"){
+                    $dateSql = " and (b.year = ".($year-1)." and b.year_type = 2)";
+                }
+            }
 			$count = Yii::app()->db->createCommand()->select("a.id")->from("hr$suffix.hr_review_h a")
 				->leftJoin("hr$suffix.hr_review b","a.review_id=b.id")
 				->leftJoin("hr$suffix.hr_employee d","b.employee_id=d.id")
@@ -198,6 +201,44 @@ class SysBlock {
 		$row = Yii::app()->db->createCommand($sql)->queryRow();
 		return ($row===false);
 	}
+
+
+    /**
+    每月3日, 驗證 用户有月报表分析权限为读写的权限的未及时发送邮件, false: 未处理
+     **/
+    public function isMonthDispatch () {
+        $uid = Yii::app()->user->id;
+        $city = Yii::app()->user->city();
+        $suffix = Yii::app()->params['envSuffix'];
+        $email=Yii::app()->user->email();
+        $lastdate = date('d')<3 ? date('Y-m-d',strtotime('-3 months')) : date('Y-m-d',strtotime('-2 months'));
+        $year = date("Y", strtotime($lastdate));
+        $month = date("n", strtotime($lastdate));
+        $sql = "select a_control from security$suffix.sec_user_access 
+				where username='$uid' and system_id='drs' and a_read_write like '%H01%'
+			";
+        $row = Yii::app()->db->createCommand($sql)->queryRow();
+        if ($row===false) return true;
+        $subject="月报表总汇-" .$year.'/'.$month;
+        if($month==1){
+            $months=12;
+            $years=$year-1;
+       }else{
+            $months=$month-1;
+            $years=$year;
+        }
+        $subjectlast="月报表总汇-" .$years.'/'.$months;
+        $sql = "select id from swoper$suffix.swo_month_email               
+                where city='$city' and  request_dt<= '$lastdate' and subject='$subject'	
+			";
+        $row = Yii::app()->db->createCommand($sql)->queryAll();
+       if(count($row)==1){
+           return true;
+       }else{
+           return false;
+       }
+    }
+
 
 	public function test() {
 		return false;
