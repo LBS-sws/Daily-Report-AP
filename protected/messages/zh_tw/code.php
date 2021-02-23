@@ -57,6 +57,13 @@ return array(
 'Floor Cleaner'=>'洗地易',
 'Taxpayer No.'=>'納稅人登記號',
 
+'Disinfectant'=>'消毒液',
+'Purification'=>'空氣淨化',
+'Chemical'=>'化學劑',
+'Aromatherapy'=>'香薰',
+'Pest control'=>'蟲控',
+'Sales Products'=>'銷售產品分類',
+
 'Start Date'=>'开始日期',
 'End Date'=>'结束日期',
 'Priority'=>'优先',
@@ -67,7 +74,7 @@ return array(
 'Announcement Form'=>'公告表单',
 'Announcement List'=>'公告列表',
 'Announcement'=>'公告',
-
+'-- None --'=>'无',
 'Cust Type Name'=>'名稱',
 'Fractiony'=>'單個分數',
 'Condition'=>'條件',

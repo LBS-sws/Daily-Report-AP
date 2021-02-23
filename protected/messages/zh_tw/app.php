@@ -44,6 +44,8 @@ return array(
 'LBS Customer Enquiry'=>'史偉莎客戶查詢',
 'Comprehensive data comparative analysis'=>'综合数据对比分析',
 'Monthly Report Analysis'=>'月報表分析',
+'Quality'=>'質檢',
+'Average score of quality inspection'=>'質檢平均分',
 
 'All'=>'全部',
 'All Daily Reports'=>'日報表總匯',
@@ -104,5 +106,10 @@ return array(
 'QC Delete'=>'品檢刪除',
 'System Use'=>'系統使用',
 'Announcement'=>'公告',
+
+'Integrated data email (region)'=>'綜合數據電郵（地區）',
+'Integrated data email (regional)'=>'綜合數據電郵（區域）',
+'Integrated data email (all)'=>'綜合數據電郵（全部）',
+
 );
 ?>
