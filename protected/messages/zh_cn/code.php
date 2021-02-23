@@ -24,6 +24,7 @@ return array(
 	'Description'=>'名称',
 	'Code'=>'编号',
 	'Name'=>'名称',
+    'Taxpayer No.'=>'纳税人登记号',
 	
 	'City'=>'城市',
 	'City Form'=>'城市表单',
@@ -39,9 +40,9 @@ return array(
 	'Service Type Form'=>'服务类别表单',
 	'Service Type List'=>'服务类别列表',
 	
-	'Paper'=>'纸品',
+	'Paper'=>'纸品系列',
 	'Soap'=>'皂液',
-	'Other'=>'其他',
+	'Other'=>'其他系列',
 	'Nil'=>'无',
 	'Type'=>'类别',
 	'Currency'=>'货币',
@@ -55,6 +56,14 @@ return array(
 	'Puriscent'=>'飘盈香',
 	'Perfume'=>'香水',
 	'Floor Cleaner'=>'洗地易',
+    'Sales Products'=>'销售产品分类',
+    '-- None --'=>'无',
+
+    'Disinfectant'=>'消毒液及皂液系列',
+    'Purification'=>'空气净化系列',
+    'Chemical'=>'化学剂系列',
+    'Aromatherapy'=>'香薰系列',
+    'Pest control'=>'虫控系列',
 	
 	'Start Date'=>'开始日期',
 	'End Date'=>'结束日期',
