@@ -222,7 +222,7 @@ class CalcService extends Calculation {
 					swo_service a, swo_customer_type b 
 				where 
 					a.cust_type=b.id and 
-					b.rpt_cat in ('NEW', 'IC') and
+					b.rpt_cat in ('NEW', 'IC', 'ID') and
 					((a.status='N' and year(a.first_dt)=$year and month(a.first_dt)=$month) or 
 						(a.status='A' and year(a.status_dt)=$year and month(a.status_dt)=$month and 
 							(case a.paid_type
@@ -361,7 +361,7 @@ class CalcService extends Calculation {
 				where 
 					
 					a.cust_type=b.id and b.rpt_cat <> 'INV' and 
-					a.nature_type=c.id and c.rpt_cat='B01' and
+					a.nature_type=c.id and c.rpt_cat in ('B01','C01') and
 					((a.status='N' and year(a.first_dt)=$year and month(a.first_dt)=$month) or 
 						(a.status='A' and year(a.status_dt)=$year and month(a.status_dt)=$month and 
 							(case a.paid_type
@@ -475,18 +475,18 @@ class CalcService extends Calculation {
 					sum(
 						if(a.status='T',
 							(case a.paid_type
-								when 'Y' then a.amt_paid
-								when 'M' then a.amt_paid * (case when a.ctrt_period < 12 then a.ctrt_period else 12 end)
+								when 'Y' then a.amt_paid / (case when a.ctrt_period > 0 then a.ctrt_period else 12 end)
+								when 'M' then a.amt_paid
 								else a.amt_paid
 							end),
 							(case a.b4_paid_type
-								when 'Y' then ifnull(a.b4_amt_paid,0)
-								when 'M' then ifnull(a.b4_amt_paid,0) * (case when a.ctrt_period < 12 then a.ctrt_period else 12 end)
+								when 'Y' then ifnull(a.b4_amt_paid,0) / (case when a.ctrt_period > 0 then a.ctrt_period else 12 end)
+								when 'M' then ifnull(a.b4_amt_paid,0)
 								else ifnull(a.b4_amt_paid,0)
 							end) -
 							(case a.paid_type
-								when 'Y' then a.amt_paid
-								when 'M' then a.amt_paid * (case when a.ctrt_period < 12 then a.ctrt_period else 12 end)
+								when 'Y' then a.amt_paid / (case when a.ctrt_period > 0 then a.ctrt_period else 12 end)
+								when 'M' then a.amt_paid
 								else a.amt_paid
 							end) 
 						)
@@ -500,13 +500,13 @@ class CalcService extends Calculation {
 					(a.status='T' or 
 						(a.status='A' and 
 							(case a.paid_type
-								when 'Y' then a.amt_paid
-								when 'M' then a.amt_paid * (case when a.ctrt_period < 12 then a.ctrt_period else 12 end)
+								when 'Y' then a.amt_paid / (case when a.ctrt_period > 0 then a.ctrt_period else 12 end)
+								when 'M' then a.amt_paid
 								else a.amt_paid
 							end) <
 							(case a.b4_paid_type
-								when 'Y' then ifnull(a.b4_amt_paid,0)
-								when 'M' then ifnull(a.b4_amt_paid,0) * (case when a.ctrt_period < 12 then a.ctrt_period else 12 end)
+								when 'Y' then ifnull(a.b4_amt_paid,0) / (case when a.ctrt_period > 0 then a.ctrt_period else 12 end)
+								when 'M' then ifnull(a.b4_amt_paid,0)
 								else ifnull(a.b4_amt_paid,0)
 							end)
 						)
