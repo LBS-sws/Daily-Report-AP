@@ -196,7 +196,16 @@ $this->pageTitle=Yii::app()->name . ' - Product Delivery Form';
 			</div>
 <div class="box">
 <div class="box-body table-responsive">
-			<legend><?php echo Yii::t('logistic','Task'); ?></legend>
+			<legend><?php echo Yii::t('logistic','Task'); ?>
+    <span class="text-red" style="font-size: 15px;">
+			<?php
+            echo Yii::t('logistic','Please refer to the standard here.');
+            echo CHtml::link(' ('.Yii::t('logistic','Click to view picture').')','#',
+                array('onclick'=>'showHelp();return false;'));
+            ?>
+
+		</span>
+            </legend>
 			<?php $this->widget('ext.layout.TableView2Widget', array(
 					'model'=>$model,
 					'attribute'=>'detail',
@@ -211,7 +220,7 @@ $this->pageTitle=Yii::app()->name . ' - Product Delivery Form';
 		</div>
 	</div>
 </section>
-
+<?php $this->renderPartial('//logistic/help'); ?>
 <?php $this->renderPartial('//site/removedialog'); ?>
 <?php $this->renderPartial('//site/lookup'); ?>
 
@@ -248,11 +257,23 @@ $('table').on('click','#btnDelRow', function() {
 	";
 Yii::app()->clientScript->registerScript('removeRow',$js,CClientScript::POS_READY);
 
-	$js = "
+switch(Yii::app()->language) {
+	case 'zh_cn': $lang = 'zh-CN'; break;
+	case 'zh_tw': $lang = 'zh-TW'; break;
+	default: $lang = Yii::app()->language;
+}
+$disabled = ($model->scenario!='view') ? 'false' : 'true';
+
+$js = "
 $(document).ready(function(){
 	var ct = $('#tblDetail tr').eq(1).html();
 	$('#dtltemplate').attr('value',ct);
 	$('.deadline').datepicker({autoclose: true, format: 'yyyy/mm/dd'});
+	$('.select2').select2({
+		tags: false,
+		language: '$lang',
+		disabled: $disabled,
+	});
 });
 
 $('#btnAddRow').on('click',function() {
@@ -288,6 +309,11 @@ $('#btnAddRow').on('click',function() {
 			var topos = $('#'+nid).position().top;
 			$('#tbl_detail').scrollTop(topos);
 		}
+		$('.select2').select2({
+			tags: false,
+			language: '$lang',
+			disabled: $disabled,
+		});
 	}
 });
 	";
@@ -302,7 +328,12 @@ $('#btnAddRow').on('click',function() {
 
 $js = Script::genDeleteData(Yii::app()->createUrl('logistic/delete'));
 Yii::app()->clientScript->registerScript('deleteRecord',$js,CClientScript::POS_READY);
-
+$js = <<<EOF
+function showHelp() {
+	$('#helpdialog').modal('show');
+}
+EOF;
+Yii::app()->clientScript->registerScript('helpClick',$js,CClientScript::POS_HEAD);
 $js = Script::genReadonlyField();
 Yii::app()->clientScript->registerScript('readonlyClass',$js,CClientScript::POS_READY);
 ?>
