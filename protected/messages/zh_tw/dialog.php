@@ -66,5 +66,6 @@ return array(
 'Mark Read Done'=>'標記已讀完成',
 'Confirmation Ti'=>'確認提交',
 'TiJiao'=>'提交',
+'Advice'=>'温馨提示',
 );
 ?>
