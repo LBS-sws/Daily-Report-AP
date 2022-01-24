@@ -59,12 +59,6 @@ $this->pageTitle=Yii::app()->name . ' - Month Report Form';
 						array('size'=>10,'readonly'=>true)
 					); ?>
 				</div>
-				<?php echo $form->labelEx($model,'state',array('class'=>"col-sm-1 control-label")); ?>
-				<div class="col-sm-2">
-				    <?php echo $form->textField($model, 'state',
-					array('size'=>10,'readonly'=>true)
-				    ); ?>
-				</div>
 			</div>
 	
 			<legend>&nbsp;</legend>
