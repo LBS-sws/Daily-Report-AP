@@ -1165,9 +1165,9 @@ WHERE hdr_id = '".$model['id']."'";
                 $sqla="select * from swo_monthly_comment where hdr_id=$this->id";
                 $ros = Yii::app()->db->createCommand($sqla)->queryAll();
                 if(empty($ros)){
-                    $sql="insert into swo_monthly_comment(hdr_id,market,legwork,finance,service,personnel,other,luu,lcu) values(:hdr_id,:market,:legwork,:finance,:service,:personnel,:other,:luu,:lcu)";
+                    $sql="insert into swo_monthly_comment(hdr_id,market,legwork,finance,service,personnel,other,luu,lcu,state) values(:hdr_id,:market,:legwork,:finance,:service,:personnel,:other,:luu,:lcu,'N')";
                 }else{
-                    $sql="UPDATE swo_monthly_comment SET market =:market,legwork = :legwork,service = :service,personnel = :personnel,finance =:finance,other = :other,luu=:luu
+                    $sql="UPDATE swo_monthly_comment SET market =:market,legwork = :legwork,service = :service,personnel = :personnel,finance =:finance,other = :other,luu=:luu,state='N'
 WHERE hdr_id = :hdr_id";
                 }
                 break;
