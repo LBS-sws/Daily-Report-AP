@@ -231,6 +231,9 @@ class SysBlock {
         }else{
             $lastdate = date('Y-m-d',strtotime(date('Y-m-4').' -2 months'));
         }
+	    if($lastdate<'2022-12-01'){//十二月份以前的報表不限制使用
+		    return true;
+	    }
         $year = date("Y", strtotime($lastdate));
         $month = date("n", strtotime($lastdate));
         $sql = "select a_control from security$suffix.sec_user_access 
