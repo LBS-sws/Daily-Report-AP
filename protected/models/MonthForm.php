@@ -14,6 +14,7 @@ class MonthForm extends CFormModel
     public $finance;
     public $other;
     public $total;
+    public $state;
 
     public function attributeLabels()
     {
@@ -882,6 +883,11 @@ class MonthForm extends CFormModel
                         $this->personnel = $ros[0]['personnel'];
                         $this->finance = $ros[0]['finance'];
                         $this->other = $ros[0]['other'];
+                        if($ros[0]['state']=='Y'){
+                            $this->state ='已发送';
+                        }else{
+                            $this->state ='未发送';
+                        }
                     }
                 }
                 $temp = array();
@@ -919,9 +925,9 @@ class MonthForm extends CFormModel
         $sqla="select * from swo_monthly_comment where hdr_id='".$id."'";
         $ros = Yii::app()->db->createCommand($sqla)->queryAll();
         if(empty($ros)){
-            $in="insert into swo_monthly_comment(hdr_id,market,legwork,finance,service,personnel,other,luu,lcu) values('".$id."','".$market."','".$legwork."','".$finance."','".$service."','".$personnel."','".$other."','".$user."','".$user."')";
+            $in="insert into swo_monthly_comment(hdr_id,market,legwork,finance,service,personnel,other,luu,lcu,lcu) values('".$id."','".$market."','".$legwork."','".$finance."','".$service."','".$personnel."','".$other."','".$user."','".$user."','Y')";
         }else{
-        $in="UPDATE swo_monthly_comment SET market = '".$market."',legwork = '".$legwork."',service = '".$service."',personnel = '".$personnel."',finance = '".$finance."',other = '".$other."'
+        $in="UPDATE swo_monthly_comment SET market = '".$market."',legwork = '".$legwork."',service = '".$service."',personnel = '".$personnel."',finance = '".$finance."',other = '".$other."',other = 'Y'
 WHERE hdr_id = '".$model['id']."'";
         }
         $int = Yii::app()->db->createCommand($in)->execute();
