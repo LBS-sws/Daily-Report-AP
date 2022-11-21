@@ -440,7 +440,7 @@ class QcController extends Controller
     </table>
     </div>";
         $pdf->writeHTML($tbl, true, false, false, false, '');
-        $outstring =$pdf->Output('IB.pdf', 'D');
+        $outstring =$pdf->Output('IB.pdf', 'I');
         return $outstring;
     }
 //IA
@@ -632,7 +632,7 @@ class QcController extends Controller
 				</tr>
 			</table>";
         $pdf->writeHTML($tbl, true, false, false, false, '');
-        $outstring =$pdf->Output('IA.pdf', 'D');
+        $outstring =$pdf->Output('IA.pdf', 'I');
         return $outstring;
     }
 	
