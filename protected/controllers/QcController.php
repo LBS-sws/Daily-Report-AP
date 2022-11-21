@@ -144,7 +144,7 @@ class QcController extends Controller
 //$url = "/uploads/".$log["attachment"];
         Header('location:http://'.$pdf);
     }
-	
+
 //IB
     public function actionDown()
     {
@@ -206,9 +206,9 @@ class QcController extends Controller
         $arr['sign_qc']=$model->info['sign_qc'];
         $arr = (object)$arr;
         $image=array();
-        $image['sign_cust']=TbHtml::image($model->info['sign_cust'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>150,'height'=>30,));
-        $image['sign_tech']=TbHtml::image($model->info['sign_tech'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>150,'height'=>30,));
-        $image['sign_qc']=TbHtml::image($model->info['sign_qc'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>150,'height'=>30,));
+        $image['sign_cust']=TbHtml::image($model->info['sign_cust'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>100,'height'=>50,));
+        $image['sign_tech']=TbHtml::image($model->info['sign_tech'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>100,'height'=>50,));
+        $image['sign_qc']=TbHtml::image($model->info['sign_qc'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>100,'height'=>50,));
         $image = (object)$image;
 //        print_r(TbHtml::image($model->info['sign_cust'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>200,'height'=>100,)));
 //     print_r('<pre>');
@@ -244,7 +244,7 @@ class QcController extends Controller
             <td colspan=\"4\"></td>
         </tr>
         <tr>
-            <td width=\"150px\"><b>".Yii::t("down","质检评分（占总分60%）")."</b></td>
+            <td width=\"".(150+$outWidth)."px\"><b>".Yii::t("down","质检评分（占总分60%）")."</b></td>
             <td colspan=\"3\">".Yii::t("down","分数：")."$arr->qc_score</td>
         </tr>
          <tr>
@@ -259,37 +259,37 @@ class QcController extends Controller
         </tr>
         <tr>
             <td>".Yii::t("down","现场检查")."</td>
-            <td width=\"238px\">".Yii::t("down","现场的检查按照程序和顺序,无遗漏")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","现场的检查按照程序和顺序,无遗漏")."</td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >$arr->score_ratcheck</td>
         </tr>
         <tr>
             <td>".Yii::t("down","死鼠清理")."</td>
-            <td width=\"238px\">".Yii::t("down","死鼠是否及时发现并清理")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","死鼠是否及时发现并清理")."</td>
             <td width=\"68px\">	15".Yii::t("down","分")."</td>
             <td >$arr->score_ratdispose</td>
         </tr>
         <tr>
             <td>".Yii::t("down","粘板布放")."</td>
-            <td width=\"238px\">".Yii::t("down","粘鼠板布放是否合理到位，及时更换失效粘板")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","粘鼠板布放是否合理到位，及时更换失效粘板")."</td>
             <td width=\"68px\">15".Yii::t("down","分")."</td>
             <td >	$arr->score_ratboard</td>
         </tr>
         <tr>
             <td>".Yii::t("down","鼠洞封堵")."</td>
-            <td width=\"238px\">".Yii::t("down","对能够封堵的鼠洞进行全面封堵，无遗漏")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","对能够封堵的鼠洞进行全面封堵，无遗漏")." </td>
             <td width=\"68px\">	15".Yii::t("down","分")."</td>
             <td >	$arr->score_rathole</td>
         </tr>
         <tr>
             <td>".Yii::t("down","警示标签")."</td>
-            <td width=\"238px\">".Yii::t("down","老鼠控制的场所是否贴有警示标签")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","老鼠控制的场所是否贴有警示标签")." </td>
             <td width=\"68px\">	15".Yii::t("down","分")."</td>
             <td >	$arr->score_ratwarn</td>
         </tr>
         <tr>
             <td>".Yii::t("down","鼠药投放")."</td>
-            <td width=\"238px\">".Yii::t("down","鼠药的摆放是否全面，及时添加")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","鼠药的摆放是否全面，及时添加")."</td>
             <td width=\"68px\">	15".Yii::t("down","分")."</td>
             <td >	$arr->score_ratdrug</td>
         </tr>
@@ -300,25 +300,25 @@ class QcController extends Controller
         </tr>
         <tr>
             <td>".Yii::t("down","现场检查 ")."</td>
-            <td width=\"238px\">".Yii::t("down","现场的检查按照程序和顺序,无遗漏 ")."   </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","现场的检查按照程序和顺序,无遗漏 ")."   </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_roachcheck</td>
         </tr>
         <tr>
             <td>".Yii::t("down","胶饵点施")."</td>
-            <td width=\"238px\">".Yii::t("down","胶饵的点施全面、合理")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","胶饵的点施全面、合理")." </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_roachdrug</td>
         </tr>
         <tr>
             <td>".Yii::t("down","失效胶饵的处理")."</td>
-            <td width=\"238px\">".Yii::t("down","更换陈旧、失效的胶饵")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","更换陈旧、失效的胶饵")." </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_roachexdrug</td>
         </tr>
         <tr>
             <td>".Yii::t("down","撒施毒饵")."</td>
-            <td width=\"238px\">".Yii::t("down","毒饵的撒施合理、全面")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","毒饵的撒施合理、全面")." </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_roachtoxin</td>
         </tr>
@@ -329,25 +329,25 @@ class QcController extends Controller
         </tr>
         <tr>
             <td>".Yii::t("down","蚊滋杯")."</td>
-            <td width=\"238px\">".Yii::t("down","蚊滋杯的制作是否规范,是否贴警示标签,并定期更换")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","蚊滋杯的制作是否规范,是否贴警示标签,并定期更换")." </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_flycup</td>
         </tr>
         <tr>
             <td>".Yii::t("down","灭蚊蝇灯")."</td>
-            <td width=\"238px\">".Yii::t("down","是否及时更换粘纸，粘蝇纸布放合理")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","是否及时更换粘纸，粘蝇纸布放合理")." </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_flylamp</td>
         </tr>
         <tr>
             <td>".Yii::t("down","滋生地处理")."</td>
-            <td width=\"238px\">".Yii::t("down","对滋生地的控制是否合理")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","对滋生地的控制是否合理")." </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_flycntl</td>
         </tr>
          <tr>
             <td>".Yii::t("down","化学剂喷洒")."</td>
-            <td width=\"238px\">".Yii::t("down","做滞留喷洒时是否做到标准流程")." </td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","做滞留喷洒时是否做到标准流程")." </td>
             <td width=\"68px\">	25".Yii::t("down","分")."</td>
             <td >	$arr->score_flyspray</td>
         </tr>
@@ -368,13 +368,13 @@ class QcController extends Controller
         </tr>
         <tr>
             <td>".Yii::t("down","着装规范")."</td>
-            <td width=\"238px\">".Yii::t("down","仪容整洁合理（穿着整洁的工作服）")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","仪容整洁合理（穿着整洁的工作服）")."</td>
             <td width=\"68px\">10".Yii::t("down","分")."</td>
             <td>$arr->score_uniform</td>
         </tr>
         <tr>
             <td>".Yii::t("down","装备齐全")."</td>
-            <td width=\"238px\">".Yii::t("down","携带的工具，药物等齐全")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","携带的工具，药物等齐全")."</td>
             <td width=\"68px\">10".Yii::t("down","分")."</td>
             <td>$arr->score_tools</td>
         </tr>
@@ -385,13 +385,13 @@ class QcController extends Controller
         </tr>
         <tr>
             <td>".Yii::t("down","进门打招呼")."</td>
-            <td width=\"238px\">".Yii::t("down","技术员到达现场后需要到现场负责人处报到")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","技术员到达现场后需要到现场负责人处报到")."</td>
             <td width=\"68px\">20".Yii::t("down","分")."</td>
             <td>$arr->score_greet</td>
         </tr>
         <tr>
             <td>".Yii::t("down","现场沟通")."</td>
-            <td width=\"238px\">".Yii::t("down","技术员在服务时和现场人员的询问与沟通")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","技术员在服务时和现场人员的询问与沟通")."</td>
             <td width=\"68px\">20".Yii::t("down","分")."</td>
             <td>$arr->score_comm</td>
         </tr>
@@ -402,13 +402,13 @@ class QcController extends Controller
         </tr>
         <tr>
             <td>".Yii::t("down","安全")."</td>
-            <td width=\"238px\">".Yii::t("down","药物投放是否安全（使用鼠饵盒药物不可接触食物）")."</td>
+            <td width=\"".(238+$outWidthTwo)."px\">".Yii::t("down","药物投放是否安全（使用鼠饵盒药物不可接触食物）")."</td>
             <td width=\"68px\">10".Yii::t("down","分")."</td>
             <td>$arr->score_safety</td>
         </tr>
         <tr>
             <td>".Yii::t("down","工作后效果")."</td>
-            <td width=\"238px\"></td>
+            <td width=\"".(238+$outWidthTwo)."px\"></td>
             <td width=\"68px\">30".Yii::t("down","分")."</td>
             <td>$arr->score_afterwork</td>
         </tr>
@@ -419,10 +419,6 @@ class QcController extends Controller
         <tr>          
             <td colspan=\"3\" style=\"font-size: 15px;\"><b>".Yii::t("down","总分 ")." </b>$model->qc_result</td>
            <td>&nbsp;</td>
-        </tr>
-        <tr>          
-          <td colspan=\"4\">
-        </td>
         </tr>
         <tr>
             <td  height=\"25px\" width=\"".(75+$outWidthThree)."px\" style=\"font-size: 12px\"><b>".Yii::t("down","客户意见：")."</b></td>
@@ -440,7 +436,7 @@ class QcController extends Controller
     </table>
     </div>";
         $pdf->writeHTML($tbl, true, false, false, false, '');
-        $outstring =$pdf->Output('IB.pdf', 'D');
+        $outstring =$pdf->Output('IB.pdf', 'I');
         return $outstring;
     }
 //IA
@@ -508,9 +504,9 @@ class QcController extends Controller
 //        exit();
         $arr = (object)$arr;
         $image=array();
-        $image['sign_cust']=TbHtml::image($model->info['sign_cust'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>200,'height'=>40,));
-        $image['sign_tech']=TbHtml::image($model->info['sign_tech'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>200,'height'=>40,));
-        $image['sign_qc']=TbHtml::image($model->info['sign_qc'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>200,'height'=>40,));
+        $image['sign_cust']=TbHtml::image($model->info['sign_cust'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>200,'height'=>100,));
+        $image['sign_tech']=TbHtml::image($model->info['sign_tech'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>200,'height'=>100,));
+        $image['sign_qc']=TbHtml::image($model->info['sign_qc'],'QcForm_info_sign_cust_img',array('id'=>'QcForm_info_sign_cust_img','width'=>200,'height'=>100,));
         $image = (object)$image;
         $pdf->AddPage();
         $outWidth=Yii::app()->language=="en"?10:0;
@@ -632,7 +628,7 @@ class QcController extends Controller
 				</tr>
 			</table>";
         $pdf->writeHTML($tbl, true, false, false, false, '');
-        $outstring =$pdf->Output('IA.pdf', 'D');
+        $outstring =$pdf->Output('IA.pdf', 'I');
         return $outstring;
     }
 	
