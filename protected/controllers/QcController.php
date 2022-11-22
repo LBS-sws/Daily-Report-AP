@@ -412,10 +412,6 @@ class QcController extends Controller
             <td width=\"68px\">30".Yii::t("down","分")."</td>
             <td>$arr->score_afterwork</td>
         </tr>
-                <tr>          
-          <td colspan=\"4\">
-        </td>
-        </tr>
         <tr>          
             <td colspan=\"3\" style=\"font-size: 15px;\"><b>".Yii::t("down","总分 ")." </b>$model->qc_result</td>
            <td>&nbsp;</td>
