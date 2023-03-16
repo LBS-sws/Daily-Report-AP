@@ -2,6 +2,7 @@
 
 class MyExcel {
 	protected $objPHPExcel;
+	protected $report_id;
 
 	protected $current_row = 0;
 	
@@ -16,6 +17,10 @@ class MyExcel {
 	protected $line_group_def = array();
 
 	protected $report_structure = array();
+
+	public function SetReportId($rpt_id) {
+		$this->report_id = $rpt_id;
+	}
 
 	public function SetHeaderTitle($invalue) {
 		$this->header_title = $invalue;
@@ -80,8 +85,15 @@ class MyExcel {
 			$this->objPHPExcel->setActiveSheetIndex(0)->setTitle($title);
 		}
 		$this->setReportFormat();
-		$this->outHeader($sheetid);
-		$this->outDetail($data);
+		switch ($this->report_id){
+            case "RptSummarySC"://特别处理（客户服务统计报表）
+                $this->outHeader($sheetid);
+                $this->outDetailForSC($data);
+                break;
+            default:
+                $this->outHeader($sheetid);
+                $this->outDetail($data);
+        }
 	}
 	
 	public function generate($data) {
@@ -213,6 +225,128 @@ class MyExcel {
 		$this->current_row++;
 	}
 	
+	protected function outDetailForSC($data) {
+	    if(key_exists("MO",$data)){//是否有澳門地區的數據
+            $moData=$data["MO"]["list"];
+            unset($data["MO"]);
+        }else{
+	        $moData = array();
+        }
+	    $countRowArr = array();
+        $this->setCellValue("A",$this->current_row,"签单情况");
+        $this->objPHPExcel->getActiveSheet()->mergeCells("A".$this->current_row.':'."H".$this->current_row);
+        $this->setCellValue("I",$this->current_row,"新增客户（服务）");
+        $this->objPHPExcel->getActiveSheet()->mergeCells("I".$this->current_row.':'."L".$this->current_row);
+        $this->setCellValue("M",$this->current_row,"新增客户（产品）");
+        $this->objPHPExcel->getActiveSheet()->mergeCells("M".$this->current_row.':'."N".$this->current_row);
+        $this->setHeaderStyleTwo("A{$this->current_row}:H".($this->current_row+1),"D8E4BC");
+        $this->setHeaderStyleTwo("I{$this->current_row}:L".($this->current_row+1),"C5D9F1");
+        $this->setHeaderStyleTwo("M{$this->current_row}:N".($this->current_row+1),"F8E57F");
+        $this->current_row++;
+        $this->objPHPExcel->getActiveSheet()->freezePane('B7');
+        $heardArr = array("RMB","新增服务","新增（产品）","终止服务","恢复服务","暂停服务","更改服务","净增长","长约（>=12月）","短约","餐饮客户","非餐饮客户","餐饮客户","非餐饮客户");
+        foreach ($heardArr as $key=>$heardStr){
+            $this->fillHeaderCell($key, $this->current_row, $heardStr,17);
+        }
+        $bodyKey = array(
+            "city_name","num_new","u_invoice_sum","num_stop","num_restore","num_pause","num_update",
+            "num_growth","num_long","num_short","num_cate","num_not_cate","u_num_cate","u_num_not_cate"
+        );
+        if(!empty($data)){
+            foreach ($data as $regionList){
+                $this->current_row++;
+                $regionName = $regionList["region_name"];
+                $startNum = $this->current_row;
+                if(!empty($regionList["list"])){
+                    foreach ($regionList["list"] as $cityList){
+                        foreach ($bodyKey as $key=>$keyStr){
+                            if($keyStr=="num_growth"){//净增长
+                                $text = "=SUM(B{$this->current_row}:G{$this->current_row})";
+                            }else{
+                                $text = key_exists($keyStr,$cityList)?$cityList[$keyStr]:0;
+                            }
+                            $this->objPHPExcel->getActiveSheet()
+                                ->setCellValueByColumnAndRow($key, $this->current_row, $text);
+                        }
+                        $this->current_row++;
+                    }
+                    $endNum = $this->current_row-1;
+                    //地区总结
+                    $countRowArr[]=$this->current_row;
+                    foreach ($bodyKey as $key=>$keyStr){
+                        $column1 = $this->getColumn($key);
+                        $text = $key==0?$regionName:"=SUM({$column1}{$startNum}:{$column1}{$endNum})";
+                        $this->objPHPExcel->getActiveSheet()
+                            ->setCellValueByColumnAndRow($key, $this->current_row, $text);
+                        $this->objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($key,$this->current_row)->getFont()
+                            ->setBold(true);
+                    }
+                    $this->objPHPExcel->getActiveSheet()
+                        ->getStyle("A{$this->current_row}:N{$this->current_row}")
+                        ->applyFromArray(
+                            array(
+                                'borders' => array(
+                                    'top' => array(
+                                        'style' => PHPExcel_Style_Border::BORDER_THIN
+                                    )
+                                )
+                            )
+                        );;
+                    $this->current_row++;
+                }
+            }
+            //所有总计
+            $this->current_row++;
+            foreach ($bodyKey as $key=>$keyStr){
+                $column1 = $this->getColumn($key);
+                if($key==0){
+                    $text = "总计";
+                }else{
+                    $text = "=";
+                    if(!empty($countRowArr)){
+                        foreach ($countRowArr as $row){
+                            $text=$text=="="?$text:$text."+";
+                            $text.="{$column1}{$row}";
+                        }
+                    }
+                }
+                $this->objPHPExcel->getActiveSheet()
+                    ->setCellValueByColumnAndRow($key, $this->current_row, $text);
+                $this->objPHPExcel->getActiveSheet()->getStyleByColumnAndRow($key,$this->current_row)->getFont()
+                    ->setBold(true);
+            }
+            $this->objPHPExcel->getActiveSheet()
+                ->getStyle("A{$this->current_row}:N{$this->current_row}")
+                ->applyFromArray(
+                    array(
+                        'borders' => array(
+                            'allborders' => array(
+                                'style' => PHPExcel_Style_Border::BORDER_THIN
+                            )
+                        )
+                    )
+                );
+        }
+        //澳門單獨顯示
+        $this->current_row++;
+        $this->current_row++;
+        $this->current_row++;
+        if(!empty($moData)) {
+            foreach ($moData as $cityList) {
+                foreach ($bodyKey as $key => $keyStr) {
+                    if ($keyStr == "num_growth") {//净增长
+                        $text = "=SUM(B{$this->current_row}:G{$this->current_row})";
+                    } else {
+                        $text = key_exists($keyStr, $cityList) ? $cityList[$keyStr] : 0;
+                    }
+                    $this->objPHPExcel->getActiveSheet()
+                        ->setCellValueByColumnAndRow($key, $this->current_row, $text);
+                }
+                $this->current_row++;
+            }
+        }
+    }
+
 	protected function outDetail($data) {
 		if (!empty($data)) {
 			$buffer_g = array();
@@ -317,6 +451,7 @@ class MyExcel {
 
 	protected function outLineStructure($data) {
 		$col = 0;
+        $ccol = 0;
 		$crow = $this->current_row;
 		foreach ($this->report_structure as $item) {
 			if (is_array($item)) {
@@ -445,6 +580,31 @@ class MyExcel {
 				'type'=>PHPExcel_Style_Fill::FILL_SOLID,
 				'startcolor'=>array(
 					'argb'=>'AFECFF',
+				),
+			),
+		);
+		$this->objPHPExcel->getActiveSheet()->getStyle($cells)
+			->applyFromArray($styleArray);
+	}
+
+	protected function setHeaderStyleTwo($cells,$color="AFECFF") {
+		$styleArray = array(
+			'font'=>array(
+				'bold'=>true,
+			),
+			'alignment'=>array(
+				'horizontal'=>PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+				'vertical'=>PHPExcel_Style_Alignment::VERTICAL_CENTER,
+			),
+			'borders'=>array(
+				'allborders'=>array(
+					'style'=>PHPExcel_Style_Border::BORDER_THIN,
+				),
+			),
+			'fill'=>array(
+				'type'=>PHPExcel_Style_Fill::FILL_SOLID,
+				'startcolor'=>array(
+					'argb'=>$color,
 				),
 			),
 		);

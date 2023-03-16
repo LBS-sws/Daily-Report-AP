@@ -110,6 +110,14 @@ return array(
     'Integrated data email (region)'=>'综合数据电邮（地区）',
     'Integrated data email (regional)'=>'综合数据电邮（区域）',
     'Integrated data email (all)'=>'综合数据电邮（全部）',
+	
+	'Summary Service Cases'=>'生意额数据汇总表',
+	'Active Contract'=>'生效中合约报表',
+	'Summary'=>'合同分析查询',
+	'Summary Set'=>'合同分析年目标金额',
+	'Comparison'=>'合同同比分析',
+	'Comparison Set'=>'生意额目标设置',
+	'Target Ready All'=>'查看所有目标金额',
 
 );
 ?>

@@ -51,6 +51,10 @@ return array(
 		'access'=>'B',
 		'icon'=>'fa-file-text-o',
 		'items'=>array(
+			'Summary Service Cases'=>array( //客戶服務匯總
+				'access'=>'B30',
+				'url'=>'/report/summarySC',
+			),
 			'Complaint Cases'=>array(
 				'access'=>'B01',
 				'url'=>'/report/complaint',
@@ -132,6 +136,18 @@ return array(
             'Comprehensive data comparative analysis'=>array(
                 'access'=>'G02',
                 'url'=>'/comprehensive/index',
+            ),
+            'Summary'=>array(
+                'access'=>'G03',
+                'url'=>'/summary/index',
+            ),
+            'Comparison'=>array(
+                'access'=>'G05',
+                'url'=>'/comparison/index',
+            ),
+            'Comparison Set'=>array(
+                'access'=>'G06',
+                'url'=>'/comparisonSet/index',
             ),
 		),
 	),

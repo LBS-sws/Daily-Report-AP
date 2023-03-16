@@ -366,12 +366,14 @@ EOF;
 							'sublinedefinition'=>$model->subsections(),
 							'reportstructure'=>$model->report_structure(),
 							'data'=>$model->data,
+							'rpt_id'=>$rpt_id,
 						);
 				}
 				$sheet = 0;
 				$excel = new MyExcel(); 
 				$excel->init();
 				foreach ($rptdata as $report) {
+					$excel->SetReportId($report['rpt_id']);
 					$excel->SetHeaderTitle($report['headertitle']);
 					$excel->SetHeaderString($report['headerstring']);
 
@@ -411,6 +413,7 @@ EOF;
 			case 'RptFeedbackstat': $model = new RptFeedbackstat(); break;
 			case 'RptFeedback': $model = new RptFeedback(); break;
 			case 'RptMonthly': $model = new RptMonthly(); break;
+			case 'RptSummarySC': $model = new RptSummarySC(); break;
 		}
 		return $model;
 	}
