@@ -96,7 +96,7 @@ class ComparisonForm extends CFormModel
         $where="(a.status_dt BETWEEN '{$this->start_date}' and '{$this->end_date}')";
         $where.="or (a.status_dt BETWEEN '{$lastStartDate}' and '{$lastEndDate}')";
         $rows = Yii::app()->db->createCommand()
-            ->select("a.status_dt,a.status,f.rpt_cat,f.single,a.city,g.rpt_cat as nature_rpt_cat,a.nature_type,a.paid_type,a.amt_paid,a.ctrt_period,a.b4_paid_type,a.b4_amt_paid
+            ->select("a.status_dt,a.status,f.rpt_cat,a.city,g.rpt_cat as nature_rpt_cat,a.nature_type,a.paid_type,a.amt_paid,a.ctrt_period,a.b4_paid_type,a.b4_amt_paid
             ,b.region,b.name as city_name,c.name as region_name")
             ->from("swo_service a")
             ->leftJoin("swo_customer_type f","a.cust_type=f.id")
