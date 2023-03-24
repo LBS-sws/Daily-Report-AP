@@ -54,5 +54,6 @@ return array(
     'HR Dep. Score'=>'人事部分数',
 	'Total Score'=>'总分',
 
+	'Active Contract'=>'生效中合约报表',
 );
 ?>

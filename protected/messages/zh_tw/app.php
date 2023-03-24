@@ -118,6 +118,6 @@ return array(
     'Comparison'=>'合同同比分析',
     'Comparison Set'=>'生意額目標設置',
     'Target Ready All'=>'查看所有目標金額',
-
+	'Active Contract'=>'生效中合約報表',
 );
 ?>

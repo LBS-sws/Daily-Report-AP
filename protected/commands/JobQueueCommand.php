@@ -414,6 +414,7 @@ EOF;
 			case 'RptFeedback': $model = new RptFeedback(); break;
 			case 'RptMonthly': $model = new RptMonthly(); break;
 			case 'RptSummarySC': $model = new RptSummarySC(); break;
+			case 'RptActiveService': $model = new RptActiveService(); break;
 		}
 		return $model;
 	}
