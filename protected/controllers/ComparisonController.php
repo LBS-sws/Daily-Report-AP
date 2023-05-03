@@ -57,8 +57,12 @@ class ComparisonController extends Controller
             $criteria = $session['comparison_c01'];
             $model->setCriteria($criteria);
         }else{
-            $model->start_date = date("Y/01/01");
-            $model->end_date = date("Y/m/t");
+            $model->search_year = date("Y");
+            $model->search_month = date("n");
+            $model->search_start_date = date("Y/m/01");
+            $model->search_end_date = date("Y/m/t");
+            $i = ceil($model->search_month/3);//向上取整
+            $model->search_quarter = 3*$i-2;
         }
 		$this->render('index',array('model'=>$model));
 	}

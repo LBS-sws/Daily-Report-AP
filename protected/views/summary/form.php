@@ -13,7 +13,7 @@ $this->pageTitle=Yii::app()->name . ' - Summary Form';
     .click-tr>.fa:before{ content: "\f062";}
     .click-tr.show-tr>.fa:before{ content: "\f063";}
     .table-fixed{ table-layout: fixed;}
-    input[type="checkbox"].readonly{ opacity: 0.6;pointer-events: none;}
+    .radio-inline,select{ opacity: 0.6;pointer-events: none;}
     .form-group{ margin-bottom: 0px;}
     .table-fixed>thead>tr>th,.table-fixed>tfoot>tr>td,.table-fixed>tbody>tr>td{ text-align: center;vertical-align: middle;font-size: 12px;border-color: #333;}
     .table-fixed>tfoot>tr>td,.table-fixed>tbody>tr>td{ text-align: right;}
@@ -53,34 +53,76 @@ $this->pageTitle=Yii::app()->name . ' - Summary Form';
                 <div class="box-body" >
                     <div class="col-lg-12">
                         <div class="form-group">
-                            <?php echo $form->labelEx($model,'start_date',array('class'=>"col-sm-2 control-label")); ?>
-                            <div class="col-sm-2">
-                                <?php
-                                echo $form->hiddenField($model,"summary_year");
-                                ?>
-                                <?php echo $form->textField($model, 'start_date',
-                                    array('readonly'=>true,'prepend'=>"<span class='fa fa-calendar'></span>")
+                            <?php echo $form->hiddenField($model,"month_type");?>
+                            <?php echo $form->labelEx($model,'search_type',array('class'=>"col-sm-2 control-label")); ?>
+                            <div class="col-sm-10">
+                                <?php echo $form->inlineRadioButtonList($model, 'search_type',SummarySetList::getSelectType(),
+                                    array('readonly'=>true,'id'=>'search_type')
                                 ); ?>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <?php echo $form->labelEx($model,'end_date',array('class'=>"col-sm-2 control-label")); ?>
-                            <div class="col-sm-2">
-                                <?php echo $form->textField($model, 'end_date',
-                                    array('readonly'=>true,'prepend'=>"<span class='fa fa-calendar'></span>")
-                                ); ?>
+                        <div id="search_div">
+                            <div data-id="1" <?php if ($model->search_type!=1){ echo "style='display:none'"; } ?>>
+                                <div class="form-group">
+                                    <?php echo $form->labelEx($model,'search_year',array('class'=>"col-sm-2 control-label")); ?>
+                                    <div class="col-sm-2">
+                                        <?php echo $form->dropDownList($model, 'search_year',SummarySetList::getSelectYear(),
+                                            array('readonly'=>true,'id'=>'year_one')
+                                        ); ?>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <?php echo $form->labelEx($model,'search_quarter',array('class'=>"col-sm-2 control-label")); ?>
+                                    <div class="col-sm-2">
+                                        <?php echo $form->dropDownList($model, 'search_quarter',SummarySetList::getSummaryMonthList(),
+                                            array('readonly'=>true)
+                                        ); ?>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <?php echo $form->labelEx($model,'day_num',array('class'=>"col-sm-2 control-label")); ?>
-                            <div class="col-sm-2">
-                                <?php echo $form->textField($model, 'day_num',
-                                    array('readonly'=>true,'append'=>Yii::t("summary","day"))
-                                ); ?>
+                            <div data-id="2" <?php if ($model->search_type!=2){ echo "style='display:none'"; } ?>>
+                                <div class="form-group">
+                                    <?php echo $form->labelEx($model,'search_year',array('class'=>"col-sm-2 control-label")); ?>
+                                    <div class="col-sm-2">
+                                        <?php echo $form->dropDownList($model, 'search_year',SummarySetList::getSelectYear(),
+                                            array('readonly'=>true,'id'=>'year_two')
+                                        ); ?>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <?php echo $form->labelEx($model,'search_month',array('class'=>"col-sm-2 control-label")); ?>
+                                    <div class="col-sm-2">
+                                        <?php echo $form->dropDownList($model, 'search_month',SummarySetList::getSelectMonth(),
+                                            array('readonly'=>true)
+                                        ); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-id="3" <?php if ($model->search_type!=3){ echo "style='display:none'"; } ?>>
+                                <div class="form-group">
+                                    <?php echo $form->labelEx($model,'search_start_date',array('class'=>"col-sm-2 control-label")); ?>
+                                    <div class="col-sm-2">
+                                        <?php echo $form->textField($model, 'search_start_date',
+                                            array('readonly'=>true,'prepend'=>"<span class='fa fa-calendar'></span>")
+                                        ); ?>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <?php echo $form->labelEx($model,'search_end_date',array('class'=>"col-sm-2 control-label")); ?>
+                                    <div class="col-sm-2">
+                                        <?php echo $form->textField($model, 'search_end_date',
+                                            array('readonly'=>true,'prepend'=>"<span class='fa fa-calendar'></span>")
+                                        ); ?>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <?php echo $form->labelEx($model,'day_num',array('class'=>"col-sm-2 control-label")); ?>
+                                    <div class="col-sm-2">
+                                        <?php echo $form->textField($model, 'day_num',
+                                            array('readonly'=>true,'append'=>Yii::t("summary","day"))
+                                        ); ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -113,9 +155,9 @@ $this->pageTitle=Yii::app()->name . ' - Summary Form';
 
 <?php
 $js="
-
     $('.click-th').click(function(){
-        var startNum=1;
+        var contNum = 2;
+        var startNum=contNum;
         var endNum = $(this).attr('colspan');
         $(this).prevAll('.click-th').each(function(){
             var colspan = $(this).attr('colspan');
@@ -123,34 +165,36 @@ $js="
         });
         endNum = parseInt(endNum,10)+startNum;
         if($(this).hasClass('active')){
-            $(this).text($(this).data('text')).removeClass('active');
+            $(this).children('span').text($(this).data('text'));
+            $(this).removeClass('active');
             $('#summary>thead>tr').eq(0).children().slice(startNum,endNum).each(function(){
                 var width = $(this).data('width')+'px';
                 $(this).width(width);
             });
-            $('#summary>thead>tr').eq(2).children().slice(startNum-1,endNum-1).each(function(){
-                $(this).text($(this).data('text'));
+            $('#summary>thead>tr').eq(2).children().slice(startNum-contNum,endNum-contNum).each(function(){
+                $(this).children('span').text($(this).data('text'));
             });
             $('#summary>tbody>tr').each(function(){
                 $(this).children().slice(startNum,endNum).each(function(){
-                    $(this).text($(this).data('text'));
+                    $(this).children('span').text($(this).data('text'));
                 });
             });
         }else{
             $(this).data('text',$(this).text());
-            $(this).text('.').addClass('active');
+            $(this).children('span').text('.');
+            $(this).addClass('active');
             $('#summary>thead>tr').eq(0).children().slice(startNum,endNum).each(function(){
                 var width = '15px';
                 $(this).width(width);
             });
-            $('#summary>thead>tr').eq(2).children().slice(startNum-1,endNum-1).each(function(){
+            $('#summary>thead>tr').eq(2).children().slice(startNum-contNum,endNum-contNum).each(function(){
                 $(this).data('text',$(this).text());
-                $(this).text('');
+                $(this).children('span').text('');
             });
             $('#summary>tbody>tr').each(function(){
                 $(this).children().slice(startNum,endNum).each(function(){
                     $(this).data('text',$(this).text());
-                    $(this).text('');
+                    $(this).children('span').text('');
                 });
             });
         }

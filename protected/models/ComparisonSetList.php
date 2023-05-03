@@ -3,6 +3,7 @@
 class ComparisonSetList extends CListPageModel
 {
     public $comparison_year;
+    public $month_type;
 	/**
 	 * Declares customized attribute labels.
 	 * If not declared here, an attribute would have a label that is
@@ -20,7 +21,7 @@ class ComparisonSetList extends CListPageModel
     public function rules()
     {
         return array(
-            array('attr, comparison_year,  pageNum, noOfItem, totalRow,city, searchField, searchValue, orderField, orderType, filter, dateRangeValue','safe',),
+            array('attr, comparison_year, month_type,  pageNum, noOfItem, totalRow,city, searchField, searchValue, orderField, orderType, filter, dateRangeValue','safe',),
         );
     }
 
@@ -32,6 +33,7 @@ class ComparisonSetList extends CListPageModel
 	public function retrieveDataByPage($pageNum=1)
 	{
 	    $this->comparison_year = (empty($this->comparison_year)||!is_numeric($this->comparison_year))?date("Y"):$this->comparison_year;
+        $this->month_type = (!in_array($this->month_type,array(1,4,7,10)))?1:$this->month_type;
         $suffix = Yii::app()->params['envSuffix'];
         $notCityStr = ComparisonSetList::notCitySqlStr();
         $sql1 = "select code,name 
@@ -99,6 +101,7 @@ class ComparisonSetList extends CListPageModel
 
     public function getCriteria() {
         return array(
+            'month_type'=>$this->month_type,
             'comparison_year'=>$this->comparison_year,
             'searchField'=>$this->searchField,
             'searchValue'=>$this->searchValue,
@@ -114,7 +117,7 @@ class ComparisonSetList extends CListPageModel
 
 	protected function resetComparisonArr(&$arr){
         $row = Yii::app()->db->createCommand()->select("*")->from("swo_comparison_set")
-            ->where("city='{$arr['code']}' and comparison_year={$this->comparison_year}")
+            ->where("city='{$arr['code']}' and comparison_year={$this->comparison_year} and month_type={$this->month_type}")
             ->queryRow();
         if($row){
             $arr["id"]=$row["id"];
