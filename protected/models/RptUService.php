@@ -14,7 +14,7 @@ class RptUService extends ReportData2 {
         $city_allow = $this->criteria->city;
         $startDay = isset($this->criteria->start_dt)?date("Y/m/d",strtotime($this->criteria->start_dt)):date("Y/m/d");
         $endDay = isset($this->criteria->end_dt)?date("Y/m/d",strtotime($this->criteria->end_dt)):date("Y/m/d");
-        $citySql = " and b.Text in ({$city_allow})";
+        $citySql = " and IF(b.Text='KL' or b.Text='SL','MY',b.Text) in ({$city_allow})";
         $suffix = Yii::app()->params['envSuffix'];
         $rows = Yii::app()->db->createCommand()->select("b.Text,a.Fee,a.TermCount,Staff01,Staff02,Staff03")
             ->from("service{$suffix}.joborder a")
