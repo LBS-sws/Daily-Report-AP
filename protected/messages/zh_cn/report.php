@@ -7,7 +7,8 @@ return array(
 	'Customer Report - Suspended'=>'暂停服务客户报表',
 	'Customer Report - Resume'=>'恢复服务客户报表',
 	'Customer Report - Amendment'=>'更改服务客户报表',
-	'Customer Report - Terminate'=>'终止服務客户报表',
+	'Customer Report - Terminate'=>'终止服务客户报表',
+	'Customer Report - All'=>'暂停/恢复/终止服务客户报表',
 	'Customer Report - Enquiry'=>'客户查询报表',
 	'Product Delivery Report'=>'物流配送报表',
 	'Quality Control Report'=>'品检记录报表',
@@ -18,7 +19,17 @@ return array(
 	'Feedback List Report'=>'经理回馈列表',
 	'Monthly Report'=>'月报表',
     'Comprehensive data comparative analysis'=>'综合数据对比分析',
-	
+	'ID-Customer-New'=>'ID新增客户',
+	'ID-Customer-Renewal'=>'ID续约客户',
+	'ID-Customer-Suspended'=>'ID暂停服务客户',
+	'ID-Customer-Resume'=>'ID恢复服务客户',
+	'ID-Customer-Amendment'=>'ID更改服务客户',
+	'ID-Customer-Terminate'=>'ID终止服务客户',
+	'Summary Service Cases Report'=>'生意额数据汇总表',
+	'Active Contract Report'=>'生效中合约报表',
+	'U Service Amount'=>'服务金额汇总',
+
+	'Area'=>'区域',
 	'City'=>'地区',
 	'Type'=>'类别',
 	'Year'=>'年',
@@ -53,7 +64,8 @@ return array(
 	'Ops. Dep. Score'=>'营运部分数',
     'HR Dep. Score'=>'人事部分数',
 	'Total Score'=>'总分',
+    'State'=>'状态',
 
-	'Active Contract'=>'生效中合约报表',
+    'Refresh every day at 6'=>'每天六点刷新'
 );
 ?>

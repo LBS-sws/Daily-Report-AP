@@ -5,7 +5,7 @@ class SummaryForm extends CFormModel
 	/* User Fields */
     public $search_start_date;//查詢開始日期
     public $search_end_date;//查詢結束日期
-    public $search_type=1;//查詢類型 1：季度 2：月份 3：天
+    public $search_type=3;//查詢類型 1：季度 2：月份 3：天
     public $search_year;//查詢年份
     public $search_month;//查詢月份
     public $search_quarter;//查詢季度
@@ -116,6 +116,17 @@ class SummaryForm extends CFormModel
             'search_end_date'=>$this->search_end_date
         );
     }
+	
+	//轉換U系統的城市（國際版專用）
+	public static function resetCity($city){
+		switch($city){
+			case "KL":
+				return "MY";
+			case "SL":
+				return "MY";
+		}
+		return $city;
+	}
 
     //获取U系统的服务单数据
     public static function getUActualMoney($startDay,$endDay,$city_allow=""){
@@ -134,7 +145,7 @@ class SummaryForm extends CFormModel
             ->queryAll();
         if($rows){
             foreach ($rows as $row){
-                $city = $row["Text"];
+                $city = SummaryForm::resetCity($row["Text"]);
                 $money = empty($row["TermCount"])?0:floatval($row["Fee"])/floatval($row["TermCount"]);
                 if(!key_exists($city,$list)){
                     $list[$city]=0;
@@ -195,6 +206,7 @@ class SummaryForm extends CFormModel
                 }
             }
         }
+
         $session = Yii::app()->session;
         $session['summary_c01'] = $this->getCriteria();
         return true;

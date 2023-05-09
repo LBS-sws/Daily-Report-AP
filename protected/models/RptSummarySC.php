@@ -17,21 +17,26 @@ class RptSummarySC extends ReportData2 {
         if(isset($this->criteria->city)&&!empty($this->criteria->city)){
             $where .= " and "."a.city in ({$this->criteria->city})";
         }
-
-        $rows = Yii::app()->db->createCommand()
-            ->select("a.status,f.rpt_cat,f.description,a.city,g.rpt_cat as nature_rpt_cat,a.nature_type,a.paid_type,a.amt_paid,a.ctrt_period,a.b4_paid_type,a.b4_amt_paid
-            ,b.region,b.name as city_name,c.name as region_name")
+        $selectSql = "a.status,f.rpt_cat,a.city,g.rpt_cat as nature_rpt_cat,a.nature_type,a.amt_paid,a.ctrt_period,a.b4_amt_paid
+            ,b.region,b.name as city_name,c.name as region_name";
+        $serviceRows = Yii::app()->db->createCommand()
+            ->select("{$selectSql},a.paid_type,a.b4_paid_type,CONCAT('A') as sql_type_name")
             ->from("swo_service a")
             ->leftJoin("swo_customer_type f","a.cust_type=f.id")
             ->leftJoin("swo_nature g","a.nature_type=g.id")
             ->leftJoin("security{$suffix}.sec_city b","a.city=b.code")
             ->leftJoin("security{$suffix}.sec_city c","b.region=c.code")
-            ->where("a.city not in ('ZY') {$where} and f.rpt_cat!='INV'")
+            ->where("a.city not in ('ZY') and f.rpt_cat!='INV' {$where}")
             ->order("a.city")
             ->queryAll();
+        //所有需要計算的客戶服務(ID客戶服務)
+        $serviceRowsID = false;
+        $serviceRows = $serviceRows?$serviceRows:array();
+        $serviceRowsID = $serviceRowsID?$serviceRowsID:array();
+        $rows = array_merge($serviceRows,$serviceRowsID);
         $data = array();
         $cityList = array();
-		if($rows){
+		if(!empty($rows)){
             foreach ($rows as $row) {
                 $row["region"] = self::strUnsetNumber($row["region"]);
                 $row["region_name"] = self::strUnsetNumber($row["region_name"]);
@@ -50,23 +55,7 @@ class RptSummarySC extends ReportData2 {
                 }
                 if(!key_exists($city,$data[$region]["list"])){
                     $cityList[$city] = $region;
-                    $data[$region]["list"][$city]=array(
-                        "city"=>$city,
-                        "city_name"=>$row["city_name"],
-                        "num_new"=>0,//新增
-                        "u_invoice_sum"=>0,//新增(U系统同步数据)
-                        "num_stop"=>0,//终止服务
-                        "num_restore"=>0,//恢复服务
-                        "num_pause"=>0,//暂停服务
-                        "num_update"=>0,//更改服务
-                        "num_growth"=>0,//净增长
-                        "num_long"=>0,//长约（>=12月）
-                        "num_short"=>0,//短约
-                        "num_cate"=>0,//餐饮客户
-                        "num_not_cate"=>0,//非餐饮客户
-                        "u_num_cate"=>0,//餐饮客户(U系统同步数据)
-                        "u_num_not_cate"=>0,//非餐饮客户(U系统同步数据)
-                    );
+                    $data[$region]["list"][$city]=$this->defMoreCity($city,$row["city_name"]);
                 }
                 if($row["paid_type"]=="M"){//月金额
                     $money = $row["amt_paid"]*$row["ctrt_period"];
@@ -104,6 +93,7 @@ class RptSummarySC extends ReportData2 {
 
             }
         }
+        $this->defaultRowForCity($data,$cityList,$this->criteria->city);
 
         //獲取U系統的數據
         $this->getUData($data,$cityList);
@@ -112,18 +102,75 @@ class RptSummarySC extends ReportData2 {
 		return true;
 	}
 
+	private function defMoreCity($city,$cityName){
+	    return array(
+            "city"=>$city,
+            "city_name"=>$cityName,
+            "num_new"=>0,//新增
+            "u_invoice_sum"=>0,//新增(U系统同步数据)
+            "num_stop"=>0,//终止服务
+            "num_restore"=>0,//恢复服务
+            "num_pause"=>0,//暂停服务
+            "num_update"=>0,//更改服务
+            "num_growth"=>0,//净增长
+            "num_long"=>0,//长约（>=12月）
+            "num_short"=>0,//短约
+            "num_cate"=>0,//餐饮客户
+            "num_not_cate"=>0,//非餐饮客户
+            "u_num_cate"=>0,//餐饮客户(U系统同步数据)
+            "u_num_not_cate"=>0,//非餐饮客户(U系统同步数据)
+        );
+    }
+
+    //Invoice表未同步，無法使用
+    public function insertUData(&$data,$cityList){
+        $startDate = $this->criteria->start_dt;
+        $endDate = $this->criteria->end_dt;
+        $suffix = Yii::app()->params['envSuffix'];
+        $where = "";
+        if(isset($this->criteria->city)&&!empty($this->criteria->city)){
+            $where .= " and b.Text in ({$this->criteria->city})";
+        }
+        $rows = Yii::app()->db->createCommand()
+            ->select("x.InvoiceAmount,b.Text AS City,g.Text AS CusType")
+            ->from("service{$suffix}.invoice x")
+            ->leftJoin("service{$suffix}.officecity a", "x.City = a.City")
+            ->leftJoin("service{$suffix}.enums b", "a.Office = b.EnumID AND b.EnumType = 8")
+            ->leftJoin("service{$suffix}.customercompany c", "x.CustomerID = c.CustomerID")
+            ->leftJoin("service{$suffix}.enums g", "(c.CustomerType - MOD (c.CustomerType, 100)) = g.EnumID AND g.EnumType = 4 ")
+            ->where("x.status>0 and x.InvoiceDate BETWEEN '{$startDate}' AND '{$endDate}'AND SUBSTRING(x.InvoiceNumber, 3, 3) = 'INV' {$where}")
+            ->order("x.InvoiceDate,x.CustomerID,x.InvoiceNumber")
+            ->queryAll();
+        if ($rows) {
+            foreach ($rows as $row){
+                $city = $row["City"];
+                $money = is_numeric($row["InvoiceAmount"])?floatval($row["InvoiceAmount"]):0;
+                if(key_exists($city,$cityList)){
+                    $region = $cityList[$city];
+                    $data[$region]["list"][$city]["u_invoice_sum"]+=$money;
+                    if($row["CusType"]==="餐饮类"){
+                        $data[$region]["list"][$city]["u_num_cate"]+=$money;
+                    }else{
+                        $data[$region]["list"][$city]["u_num_not_cate"]+=$money;
+                    }
+                }
+            }
+        }
+    }
+
     //獲取U系統的數據
 	protected function getUData(&$data,$cityList){
         $json = Invoice::getInvData($this->criteria->start_dt,$this->criteria->end_dt);
         if($json["message"]==="Success"){
             $jsonData = $json["data"];
             foreach ($jsonData as $row){
-                $city = $row["city"];
+                //$city = $row["city"];
+                $city = SummaryForm::resetCity($row["city"]);
                 $money = is_numeric($row["invoice_amt"])?floatval($row["invoice_amt"]):0;
                 if(key_exists($city,$cityList)){
                     $region = $cityList[$city];
                     $data[$region]["list"][$city]["u_invoice_sum"]+=$money;
-                    if($row["customer_type"]==="Catering"){ //餐饮类
+                    if($row["customer_type"]==="Catering"){
                         $data[$region]["list"][$city]["u_num_cate"]+=$money;
                     }else{
                         $data[$region]["list"][$city]["u_num_not_cate"]+=$money;
@@ -144,6 +191,49 @@ class RptSummarySC extends ReportData2 {
             return implode("",$arr);
         }else{
 	        return "none";
+        }
+    }
+
+    //填充默認城市
+    private function defaultRowForCity(&$data,&$cityList,$city_allow){
+        $notCity = ComparisonSetList::notCitySqlStr();
+        $notCity = explode("','",$notCity);
+        $hasCity = array_keys($cityList);
+        $notCity = array_merge($hasCity,$notCity);
+        $suffix = Yii::app()->params['envSuffix'];
+        $where="b.code not in (SELECT f.region FROM security{$suffix}.sec_city f WHERE f.region is not NULL and f.region!='' GROUP BY f.region)";
+        if(!empty($city_allow)){
+            $where.=" and b.code in ({$city_allow})";
+        }
+        if(!empty($notCity)){
+            $notCity = implode("','",$notCity);
+            $where.=" and b.code not in ('{$notCity}')";
+        }
+
+        $rows = Yii::app()->db->createCommand()
+            ->select("b.code,b.region,b.name as city_name,c.name as region_name")
+            ->from("security{$suffix}.sec_city b")
+            ->leftJoin("security{$suffix}.sec_city c","b.region=c.code")
+            ->where($where)
+            ->order("b.code")
+            ->queryAll();
+        if($rows){
+            foreach ($rows as $row){
+                $row["region"] = self::strUnsetNumber($row["region"]);
+                $row["region_name"] = self::strUnsetNumber($row["region_name"]);
+                $city = $row["code"];
+                $region = $row["region"];
+                $region = $city==="MO"?"MO":$region;//澳門地區單獨顯示
+                if(!key_exists($region,$data)){
+                    $data[$region]=array(
+                        "region"=>$region,
+                        "region_name"=>$row["region_name"],
+                        "list"=>array()
+                    );
+                }
+                $cityList[$city] = $region;
+                $data[$region]["list"][$city]=$this->defMoreCity($city,$row["city_name"]);
+            }
         }
     }
 }

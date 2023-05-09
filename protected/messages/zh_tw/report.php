@@ -8,6 +8,7 @@ return array(
 'Customer Report - Resume'=>'恢復服務客戶報表',
 'Customer Report - Amendment'=>'更改服務客戶報表',
 'Customer Report - Terminate'=>'終止服務客戶報表',
+'Customer Report - All'=>'暫停/恢復/終止服務客戶報表',
 'Customer Report - Enquiry'=>'客戶查詢報表',
 'Product Delivery Report'=>'物流配送報表',
 'Quality Control Report'=>'品檢記錄報表',
@@ -18,6 +19,17 @@ return array(
 'Feedback List Report'=>'經理回饋列表',
 'Monthly Report'=>'月報表',
 'Comprehensive data comparative analysis'=>'綜合數據對比分析',
+'ID-Customer-New'=>'新增客戶',
+'ID-Customer-Renewal'=>'續約客戶',
+'ID-Customer-Suspended'=>'暫停服務客戶',
+'ID-Customer-Resume'=>'恢復服務客戶',
+'ID-Customer-Amendment'=>'更改服務客戶',
+'ID-Customer-Terminate'=>'終止服務客戶',
+    'Summary Service Cases Report'=>'生意額數據匯總表',
+    'Active Contract Report'=>'生效中合約報表',
+    'U Service Amount'=>'服務金額匯總',
+
+    'Area'=>'區域',
 'City'=>'地區',
 'Type'=>'類別',
 'Year'=>'年',
@@ -52,6 +64,8 @@ return array(
 'Ops. Dep. Score'=>'營運部分數',
 'HR Dep. Score'=>'人事部分數',
 'Total Score'=>'總分',
-'Active Contract'=>'生效中合約報表',
+'State'=>'狀態',
+
+    'Refresh every day at 6'=>'每天六點刷新'
 );
 ?>

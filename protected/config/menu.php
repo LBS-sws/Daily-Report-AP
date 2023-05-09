@@ -17,6 +17,10 @@ return array(
 				'access'=>'A02',
 				'url'=>'/service/index',
 			),
+			'Customer Service Count'=>array(//客戶服務匯總
+				'access'=>'A12',
+				'url'=>'/serviceCount/index',
+			),
 			'Complaint Cases'=>array(
 				'access'=>'A03',
 				'url'=>'/followup/index',
@@ -51,6 +55,10 @@ return array(
 		'access'=>'B',
 		'icon'=>'fa-file-text-o',
 		'items'=>array(
+			'U Service Amount'=>array( //服務金額匯總
+				'access'=>'B32',
+				'url'=>'/report/uService',
+			),
 			'Summary Service Cases'=>array( //客戶服務匯總
 				'access'=>'B30',
 				'url'=>'/report/summarySC',
@@ -148,6 +156,18 @@ return array(
             'Comparison'=>array(
                 'access'=>'G05',
                 'url'=>'/comparison/index',
+            ),
+            'History Add'=>array(
+                'access'=>'G07',
+                'url'=>'/historyAdd/index',
+            ),
+            'History Stop'=>array(
+                'access'=>'G08',
+                'url'=>'/historyStop/index',
+            ),
+            'History Net'=>array(
+                'access'=>'G09',
+                'url'=>'/historyNet/index',
             ),
             'Comparison Set'=>array(
                 'access'=>'G06',
