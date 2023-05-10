@@ -229,7 +229,7 @@ class HistoryStopForm extends CFormModel
         if($rowStart){//年初
             $rowStart["two_gross"]=empty($rowStart["two_gross"])?0:floatval($rowStart["two_gross"]);
             $rowStart["two_net"]=empty($rowStart["two_net"])?0:floatval($rowStart["two_net"]);
-            $arr["start_two_gross"]=$rowStart["two_gross"]-$rowStart["two_net"];
+            $arr["start_two_gross"]=($rowStart["two_gross"]-$rowStart["two_net"])*-1;
         }
         $setRow = Yii::app()->db->createCommand()->select("*")->from("swo_comparison_set")
             ->where("comparison_year=:year and month_type=:month_type and city=:city",
@@ -238,7 +238,7 @@ class HistoryStopForm extends CFormModel
         if($setRow){//滚动
             $setRow["two_gross"]=empty($setRow["two_gross"])?0:floatval($setRow["two_gross"]);
             $setRow["two_net"]=empty($setRow["two_net"])?0:floatval($setRow["two_net"]);
-            $arr["two_gross"]=$setRow["two_gross"]-$setRow["two_net"];
+            $arr["two_gross"]=($setRow["two_gross"]-$setRow["two_net"])*-1;
         }
         return $arr;
     }
@@ -265,6 +265,7 @@ class HistoryStopForm extends CFormModel
         }else{
             $money = $row["amt_paid"];
         }
+        $money*=-1;
         $data[$region]["list"][$city][$dateStr] += $money;
         if($timer>=$this->week_start&&$timer<=$this->week_end){//本周
             $data[$region]["list"][$city]["now_week"] += $money;
@@ -333,7 +334,7 @@ class HistoryStopForm extends CFormModel
             "colspan"=>array(
                 array("name"=>Yii::t("summary","now week")),//本周
                 array("name"=>Yii::t("summary","last week")),//上周
-                array("name"=>Yii::t("summary","growth")),//加速增长
+                array("name"=>Yii::t("summary","stop growth")),//加速增长
             )
         );//本月預估
 

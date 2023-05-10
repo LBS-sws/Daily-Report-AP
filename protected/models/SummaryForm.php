@@ -544,6 +544,7 @@ class SummaryForm extends CFormModel
 
     //下載
     public function downExcel($excelData){
+        $this->validateDate("","");
         $headList = $this->getTopArr();
         $excel = new DownSummary();
         $excel->SetHeaderTitle(Yii::t("app","Summary"));
