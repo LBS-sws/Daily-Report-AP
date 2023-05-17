@@ -114,7 +114,8 @@ class HistoryNetForm extends CFormModel
         $serviceRows = $serviceRows?$serviceRows:array();
         $serviceRowsID = $serviceRowsID?$serviceRowsID:array();
         $rows = array_merge($serviceRows,$serviceRowsID);
-        $uList = array();
+        //$uList = array();
+        $uList = $this->getUActualMoney($this->start_date,$this->end_date,$city_allow);
         $this->insertUData($this->start_date,$this->end_date,$uList);
         $this->insertUData($this->last_start_date,$this->last_end_date,$uList);
         if($rows){
@@ -132,6 +133,39 @@ class HistoryNetForm extends CFormModel
         $session = Yii::app()->session;
         $session['historyNet_c01'] = $this->getCriteria();
         return true;
+    }
+
+    //获取U系统的服务单数据
+    public static function getUActualMoney($startDay,$endDay,$city_allow=""){
+        $list = array();
+        $citySql = "";
+        if(!empty($city_allow)){
+            $citySql = " and b.Text in ({$city_allow})";
+        }
+        $suffix = Yii::app()->params['envSuffix'];
+        $rows = Yii::app()->db->createCommand()->select("b.Text,a.JobDate,a.Fee,a.TermCount")
+            ->from("service{$suffix}.joborder a")
+            ->leftJoin("service{$suffix}.officecity f","a.City = f.City")
+            ->leftJoin("service{$suffix}.enums b","f.Office = b.EnumID and b.EnumType=8")
+            ->where("a.Status=3 and a.JobDate BETWEEN '{$startDay}' AND '{$endDay}' {$citySql}")
+            ->order("b.Text")
+            ->queryAll();
+        if($rows){
+            foreach ($rows as $row){
+                //$city = $row["Text"];
+                $city = SummaryForm::resetCity($row["Text"]);
+                $date = date("Y/m",strtotime($row["JobDate"]));
+                $money = empty($row["TermCount"])?0:floatval($row["Fee"])/floatval($row["TermCount"]);
+                if(!key_exists($city,$list)){
+                    $list[$city]=array();
+                }
+                if(!key_exists("u_{$date}",$list[$city])){
+                    $list[$city]["u_{$date}"]=0;
+                }
+                $list[$city]["u_{$date}"]+=$money;
+            }
+        }
+        return $list;
     }
 
     //填充默認城市
@@ -177,7 +211,7 @@ class HistoryNetForm extends CFormModel
     }
 
     private function insertUData($startDate,$endDate,&$uList){
-        //$year = intval($startDate);//服务的年份
+        $year = intval($startDate);//服务的年份
         $json = Invoice::getInvData($startDate,$endDate);
         if($json["message"]==="Success"){
             $jsonData = $json["data"];
@@ -185,13 +219,19 @@ class HistoryNetForm extends CFormModel
                 //$city = $row["city"];
                 $city = SummaryForm::resetCity($row["city"]);
                 $date = date("Y/m",strtotime($row["invoice_dt"]));
+                $money = is_numeric($row["invoice_amt"])?floatval($row["invoice_amt"]):0;
                 if(!key_exists($city,$uList)){
                     $uList[$city]=array();
                 }
                 if(!key_exists($date,$uList[$city])){
                     $uList[$city][$date]=0;
                 }
-                $money = is_numeric($row["invoice_amt"])?floatval($row["invoice_amt"]):0;
+                if($year == $this->search_year){//生意额需要加上产品金额
+                    if(!key_exists("u_{$date}",$uList[$city])){
+                        $uList[$city]["u_{$date}"]=0;
+                    }
+                    $uList[$city]["u_{$date}"]+=$money;
+                }
                 $uList[$city][$date]+=$money;
             }
         }
@@ -207,12 +247,15 @@ class HistoryNetForm extends CFormModel
         );
         for($i=1;$i<=$this->search_month;$i++){
             $month = $i>=10?10:"0{$i}";
-            $dateStrOne = $this->search_year."/{$month}";
-            $dateStrTwo = $this->last_year."/{$month}";
+            $dateStrOne = $this->search_year."/{$month}";//产品金额
+            $dateStrTwo = $this->last_year."/{$month}";//产品金额
+            $dateStrThree = "u_".$this->search_year."/{$month}";//生意额
             $arr[$dateStrOne]=key_exists($city,$uList)&&key_exists($dateStrOne,$uList[$city])?$uList[$city][$dateStrOne]:0;
             $arr[$dateStrOne."_u"]=$arr[$dateStrOne];
             $arr[$dateStrTwo]=key_exists($city,$uList)&&key_exists($dateStrTwo,$uList[$city])?$uList[$city][$dateStrTwo]:0;
             $arr[$dateStrTwo."_u"]=$arr[$dateStrTwo];
+            //U系统的生意额
+            $arr[$dateStrThree]=key_exists($city,$uList)&&key_exists($dateStrThree,$uList[$city])?$uList[$city][$dateStrThree]:0;
         }
         $arr["now_average"]=0;//本年平均
         $arr["last_average"]=0;//上一年平均
@@ -289,6 +332,7 @@ class HistoryNetForm extends CFormModel
         $list["two_net"]=HistoryAddForm::historyNumber($list["two_net"],$bool);
         $list["now_average"]=0;
         $list["last_average"]=0;
+        $list["u_average"]=0;
         $list["growth"]=HistoryAddForm::comYes($list["now_week"],$list["last_week"]);
         $list["start_result"]=HistoryAddForm::comYes($list["now_week"],$list["start_two_net"]);
         $list["result"]=HistoryAddForm::comYes($list["now_week"],$list["two_net"]);
@@ -296,15 +340,20 @@ class HistoryNetForm extends CFormModel
             $month = $i>=10?10:"0{$i}";
             $nowStr = $this->search_year."/{$month}";
             $lastStr = $this->last_year."/{$month}";
+            $uStr = "u_".$this->search_year."/{$month}";
             $list[$nowStr] = key_exists($nowStr,$list)?$list[$nowStr]:0;
             $list[$lastStr] = key_exists($lastStr,$list)?$list[$lastStr]:0;
+            $list[$uStr] = key_exists($uStr,$list)?$list[$uStr]:0;
             $list[$nowStr] = HistoryAddForm::historyNumber($list[$nowStr],$bool);
             $list[$lastStr] = HistoryAddForm::historyNumber($list[$lastStr],$bool);
+            $list[$uStr] = HistoryAddForm::historyNumber($list[$uStr],$bool);
             $list["now_average"]+=$list[$nowStr];
             $list["last_average"]+=$list[$lastStr];
+            $list["u_average"]+=$list[$uStr];
         }
         $list["now_average"]=round($list["now_average"]/$this->search_month,2);
         $list["last_average"]=round($list["last_average"]/$this->search_month,2);
+        $list["u_average"]=round($list["u_average"]/$this->search_month,2);
     }
 
     //顯示提成表的表格內容
@@ -330,7 +379,10 @@ class HistoryNetForm extends CFormModel
             ),//上一年
             array("name"=>$this->search_year,"background"=>"#fcd5b4",
                 "colspan"=>$monthArr
-            )//本年
+            ),//本年
+            array("name"=>$this->search_year.Yii::t("summary","Actual monthly amount"),"background"=>"#FDE9D9",
+                "colspan"=>$monthArr
+            )//生意额
         );
 
         $topList[]=array("name"=>$this->search_month.Yii::t("summary"," month estimate"),"background"=>"#f2dcdb",
@@ -423,10 +475,12 @@ class HistoryNetForm extends CFormModel
             $month = $i>=10?10:"0{$i}";
             $bodyKey[]=$this->last_year."/{$month}";
             $dateTwoList[]=$this->search_year."/{$month}";
+            $dateThreeList[]="u_".$this->search_year."/{$month}";
         }
         $bodyKey[]="last_average";
         $dateTwoList[]="now_average";
-        $bodyKey=array_merge($bodyKey,$dateTwoList);
+        $dateThreeList[]="u_average";
+        $bodyKey=array_merge($bodyKey,$dateTwoList,$dateThreeList);
 
         $bodyKey[]="now_week";
         $bodyKey[]="last_week";
@@ -482,7 +536,7 @@ class HistoryNetForm extends CFormModel
                             $allRow[$keyStr]+=is_numeric($text)?floatval($text):0;
                             $tdClass = HistoryAddForm::getTextColorForKeyStr($text,$keyStr);
                             $inputHide = TbHtml::hiddenField("excel[{$regionList['region']}][list][{$cityList['city']}][]",$text);
-                            if(strpos($keyStr,'/')!==false){//调试U系统同步数据
+                            if(strpos($keyStr,'/')!==false&&strpos($keyStr,'u_')===false){//调试U系统同步数据
                                 $html.="<td class='{$tdClass}' data-u='{$cityList[$keyStr."_u"]}'><span>{$text}</span>{$inputHide}</td>";
                             }else{
                                 $html.="<td class='{$tdClass}'><span>{$text}</span>{$inputHide}</td>";
