@@ -79,5 +79,14 @@ return array(
     'Staff Name'=>'員工',
     'Area'=>'區域',
     'Count：'=>'匯總：',
+    'dept name'=>'職位',
+    'entry month'=>'服務年期（月）',
+    'month'=>'月',
+    'seniority（month）'=>'年資（月）',
+    'screening condition'=>'篩選條件',
+    '-- all --'=>'-- 全部 --',
+    'Technician level'=>'技術員級別（包括技術員、中級/高級技術員）',
+    'Technical supervisor'=>'技術主管（技術主管級以上級別）',
+    'Other personnel'=>'其它人員',
 );
 ?>
