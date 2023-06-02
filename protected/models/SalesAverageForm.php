@@ -77,7 +77,7 @@ class SalesAverageForm extends CFormModel
         $data = array();
         $city_allow = Yii::app()->user->city_allow();
         $suffix = Yii::app()->params['envSuffix'];
-        $where="and f.rpt_cat!='INV' and a.status_dt BETWEEN '{$this->start_date}' and '{$this->end_date}'";
+        $where=" f.rpt_cat!='INV' and a.status_dt BETWEEN '{$this->start_date}' and '{$this->end_date}'";
         $selectSql = "a.city,sum(case a.paid_type
 							when 'Y' then a.amt_paid
 							when 'M' then a.amt_paid * a.ctrt_period
