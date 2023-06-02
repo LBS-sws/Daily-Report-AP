@@ -154,5 +154,8 @@ return array(
     'U Service Amount'=>'技术员生产力分析',
     'Quarter U Service'=>'季度技术员生产力分析',
     'Month U Service'=>'月度技术员生产力分析',
+    'Sales Analysis'=>'销售生产力分析',
+    'Lifeline Set'=>'生命线设置',
+    'Average office'=>'月预计平均人效',
 );
 ?>
