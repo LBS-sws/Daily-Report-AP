@@ -133,7 +133,7 @@ class SummaryForm extends CFormModel
 	    $list = array();
 	    $citySql = "";
 	    if(!empty($city_allow)){
-	        $citySql = " and b.Text in ({$city_allow})";
+	        $citySql = " and IF(b.Text='KL' or b.Text='SL','MY',b.Text) in ({$city_allow})";
         }
         $suffix = Yii::app()->params['envSuffix'];
         $rows = Yii::app()->db->createCommand()

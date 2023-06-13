@@ -170,7 +170,7 @@ class RptSummarySC extends ReportData2 {
         $suffix = Yii::app()->params['envSuffix'];
         $where = "";
         if(isset($this->criteria->city)&&!empty($this->criteria->city)){
-            $where .= " and b.Text in ({$this->criteria->city})";
+            $where .= " and IF(b.Text='KL' or b.Text='SL','MY',b.Text) in ({$this->criteria->city})";
         }
         $rows = Yii::app()->db->createCommand()
             ->select("x.InvoiceAmount,b.Text AS City,g.Text AS CusType")
