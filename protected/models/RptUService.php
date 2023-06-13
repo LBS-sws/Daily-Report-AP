@@ -20,21 +20,21 @@ class RptUService extends ReportData2 {
         $city_allow = $this->criteria->city;
         $startDay = isset($this->criteria->start_dt)?date("Y/m/d",strtotime($this->criteria->start_dt)):date("Y/m/d");
         $endDay = isset($this->criteria->end_dt)?date("Y/m/d",strtotime($this->criteria->end_dt)):date("Y/m/d");
-        $citySql = " and IF(b.Text='KL' or b.Text='SL','MY',b.Text) in ({$city_allow})";
+        $citySql = " and b.Text in ({$city_allow})";
         $suffix = Yii::app()->params['envSuffix'];
-        $rows = Yii::app()->db->createCommand()->select("IF(b.Text='KL' or b.Text='SL','MY',b.Text) as Text,a.Fee,a.TermCount,Staff01,Staff02,Staff03")
+        $rows = Yii::app()->db->createCommand()->select("b.Text,a.Fee,a.TermCount,Staff01,Staff02,Staff03")
             ->from("service{$suffix}.joborder a")
             ->leftJoin("service{$suffix}.officecity f","a.City = f.City")
             ->leftJoin("service{$suffix}.enums b","f.Office = b.EnumID and b.EnumType=8")
             ->where("a.Status=3 and b.Text not in ('ZY') and a.JobDate BETWEEN '{$startDay}' AND '{$endDay}' {$citySql}")
-            ->order("IF(b.Text='KL' or b.Text='SL','MY',b.Text)")
+            ->order("b.Text")
             ->queryAll();
         $UStaffCodeList=array();
         $staffStrList = array("Staff01","Staff02","Staff03");
         $list = array();
 		if ($rows) {
 			foreach ($rows as $row) {
-                $city = $row["Text"];
+                $city = SummaryForm::resetCity($row["Text"]);
                 $money = empty($row["TermCount"])?0:floatval($row["Fee"])/floatval($row["TermCount"]);
 
                 $staffCount = 1;
@@ -80,7 +80,7 @@ class RptUService extends ReportData2 {
                 $item["city"] = $user["city"];
                 $item["dept_name"] = $user["dept_name"];
                 $item["entry_month"] = $user["entry_month"];
-                $item["name"] = $user["name"]." ({$user["code"]})";
+                $item["name"] = $user["name"]." ({$user["code"]})".($user["staff_status"]==-1?Yii::t("summary"," - Leave"):"");
             }else{
                 unset($list[$item["staff"]]);
             }
@@ -93,7 +93,7 @@ class RptUService extends ReportData2 {
 		if(key_exists($code,$list)){
 			return $list[$code];
 		}else{
-			return array("level_type"=>3,"code"=>$code,"name"=>"","city"=>"","dept_name"=>"","entry_month"=>"","city_name"=>"");
+			return array("level_type"=>3,"staff_status"=>0,"code"=>$code,"name"=>"","city"=>"","dept_name"=>"","entry_month"=>"");
 		}
 	}
 
@@ -114,10 +114,9 @@ class RptUService extends ReportData2 {
             $whereSql = "a.code=0";
         }
         $rows = Yii::app()->db->createCommand()
-            ->select("a.code,a.entry_time,g.name as dept_name,a.name,a.city,b.name as city_name,
+            ->select("a.code,a.staff_status,a.entry_time,g.name as dept_name,a.name,a.city,
             g.level_type")
             ->from("hr{$suffix}.hr_employee a")
-            ->leftJoin("security{$suffix}.sec_city b","a.city = b.code")
             ->leftJoin("hr{$suffix}.hr_dept g","a.position = g.id")
             //需要评核类型：技术员 并且 参与评分差异
             ->where($whereSql)

@@ -118,5 +118,17 @@ return array(
     'average：'=>'平均值：',
     'completed'=>'已完成',
     'incomplete'=>'未完成',
+
+    'City List'=>'城市列表',
+    'City Code'=>'城市編號',
+    'City Name'=>'城市名稱',
+    'show type'=>'是否統計',
+    'end region'=>'最終統計區域',
+    'add type'=>'是否疊加',
+    'z index'=>'層級',
+
+    'staff office'=>'辦事處',
+    'office Name'=>'辦事處名稱',
+    'local office'=>'本部',
 );
 ?>

@@ -129,28 +129,38 @@ class SummaryForm extends CFormModel
 	}
 
     //获取U系统的服务单数据
-    public static function getUActualMoney($startDay,$endDay,$city_allow=""){
+    public static function getUActualMoney($startDay,$endDay,$city_allow="",$citySetList=array()){
 	    $list = array();
 	    $citySql = "";
 	    if(!empty($city_allow)){
-	        $citySql = " and IF(b.Text='KL' or b.Text='SL','MY',b.Text) in ({$city_allow})";
+	        $citySql = " and b.Text in ({$city_allow})";
         }
         $suffix = Yii::app()->params['envSuffix'];
-        $rows = Yii::app()->db->createCommand()->select("b.Text,a.Fee,a.TermCount")
+        $rows = Yii::app()->db->createCommand()
+            ->select("b.Text,sum(
+                    if(a.TermCount=0,0,a.Fee/a.TermCount)
+					) as sum_amount")
             ->from("service{$suffix}.joborder a")
             ->leftJoin("service{$suffix}.officecity f","a.City = f.City")
             ->leftJoin("service{$suffix}.enums b","f.Office = b.EnumID and b.EnumType=8")
             ->where("a.Status=3 and a.JobDate BETWEEN '{$startDay}' AND '{$endDay}' {$citySql}")
-            ->order("b.Text")
+            ->group("b.Text")
             ->queryAll();
         if($rows){
             foreach ($rows as $row){
                 $city = SummaryForm::resetCity($row["Text"]);
-                $money = empty($row["TermCount"])?0:floatval($row["Fee"])/floatval($row["TermCount"]);
+                $money = empty($row["sum_amount"])?0:round($row["sum_amount"],2);
                 if(!key_exists($city,$list)){
                     $list[$city]=0;
                 }
                 $list[$city]+=$money;
+                if(key_exists($city,$citySetList)&&$citySetList[$city]["add_type"]==1){//城市配置（叠加)
+                    $city=$citySetList[$city]["region_code"];
+                    if(!key_exists($city,$list)){
+                        $list[$city]=0;
+                    }
+                    $list[$city]+=$money;
+                }
             }
         }
         return $list;
@@ -167,14 +177,15 @@ class SummaryForm extends CFormModel
         $rptModel->criteria = $criteria;
         $rptModel->retrieveData();
         $this->data = $rptModel->data;
-        $uActualMoneyList = SummaryForm::getUActualMoney($this->start_date,$this->end_date,$criteria->city);
+        $citySetList = CitySetForm::getCitySetList();
+        $uActualMoneyList = SummaryForm::getUActualMoney($this->start_date,$this->end_date,$criteria->city,$citySetList);
         if($this->data){
             $strSelect = implode(",",$this->con_list);
 
             foreach ($this->data as $regionKey=>$regionList){
                 if(!empty($regionList["list"])){
                     foreach ($regionList["list"] as $cityKey=>$cityList){
-                        $this->data[$regionKey]["list"][$cityKey]["u_actual_money"]=key_exists($cityKey,$uActualMoneyList)?$uActualMoneyList[$cityKey]:0;//实际月金额
+                        $this->data[$regionKey]["list"][$cityKey]["u_actual_money"]+=key_exists($cityKey,$uActualMoneyList)?$uActualMoneyList[$cityKey]:0;//实际月金额
                         $this->data[$regionKey]["list"][$cityKey]["u_actual_money"]+=$this->data[$regionKey]["list"][$cityKey]["u_invoice_sum"];//服务生意额需要加上产品金额
                         $this->data[$regionKey]["list"][$cityKey]["num_growth"]=0;//净增长
                         foreach ($this->con_list as $itemStr){//初始化
@@ -492,7 +503,9 @@ class SummaryForm extends CFormModel
                             }
                             $text = key_exists($keyStr,$cityList)?$cityList[$keyStr]:"0";
                             $regionRow[$keyStr]+=is_numeric($text)?floatval($text):0;
-                            $allRow[$keyStr]+=is_numeric($text)?floatval($text):0;
+                            if($cityList["add_type"]!=1) { //疊加的城市不需要重複統計
+                                $allRow[$keyStr]+=is_numeric($text)?floatval($text):0;
+                            }
                             $tdClass = ComparisonForm::getTextColorForKeyStr($text,$keyStr);
                             $text = ComparisonForm::showNum($text);
                             $inputHide = TbHtml::hiddenField("excel[{$regionList['region']}][list][{$cityList['city']}][{$keyStr}]",$text);
@@ -552,6 +565,6 @@ class SummaryForm extends CFormModel
         $excel->init();
         $excel->setSummaryHeader($headList);
         $excel->setSummaryData($excelData);
-        $excel->outExcel("Summary");
+        $excel->outExcel(Yii::t("app","Summary"));
     }
 }
