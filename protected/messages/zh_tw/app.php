@@ -148,10 +148,13 @@ return array(
     'U Service Amount'=>'技術員生產力分析',
     'Quarter U Service'=>'季度技術員生產力分析',
     'Month U Service'=>'月度技術員生產力分析',
-    'Join Sales Analysis'=>'參加銷售生產力分析',
     'Sales Analysis'=>'銷售生產力分析',
     'Lifeline Set'=>'生命線設置',
     'Average office'=>'月預計平均人效',
     'City Count Set'=>'城市統計設置',
+    'Chain customer report'=>'連鎖客戶報表',
+    'Gross And Net'=>'滚动目标',
+    'Customer Service KA'=>'KA客戶服務',
+    'KA customer report'=>'KA客戶報表',
 );
 ?>
