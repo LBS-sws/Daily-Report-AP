@@ -5,7 +5,9 @@ return array(
 	'QC Read All'=>array('access'=>'CN02',),
     'QC Delete'=>array('access'=>'CN03',),
     'Monthly Report Edit'=>array('access'=>'CN04',),
-    'Target Ready All'=>array('access'=>'CN15',),//可以查看所有目标金额
+    'Target Ready Upside'=>array('access'=>'CN23',),//可以查看高級目标金额
+    'Target Ready Base'=>array('access'=>'CN21',),//可以查看中級目标金额
+    'Target Ready Minimum'=>array('access'=>'CN22',),//可以查看初級目标金额
     'Quarter Summary'=>array('access'=>'CN16',),//季度合同同比查詢
     'Month Summary'=>array('access'=>'CN17',),//月度合同同比查詢
     'Gross And Net'=>array('access'=>'CN20',),//滚动目标
