@@ -277,6 +277,11 @@ return array(
 				'url'=>'/register/index',
 				'tag'=>'@',
 			),
+			'System Log'=>array(
+				'access'=>'D06',
+				'url'=>'/systemLog/index',
+				'tag'=>'@',
+			),
 		),
 	),
 );
