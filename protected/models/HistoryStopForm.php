@@ -135,18 +135,11 @@ class HistoryStopForm extends CFormModel
             ->leftJoin("swo_service_contract_no b","a.id=b.service_id")
             ->leftJoin("swo_customer_type f","a.cust_type=f.id")
             ->leftJoin("swo_nature g","a.nature_type=g.id")
-            ->where("not(f.rpt_cat='INV' and f.single=1) and b.id is not null and a.city in ({$city_allow}) and a.city not in ('ZY') and a.status='T' and ({$where})")
+            ->where("f.rpt_cat!='INV' and b.id is not null and a.city in ({$city_allow}) and a.city not in ('ZY') and a.status='T' and ({$where})")
             ->order("a.city")
             ->queryAll();
         //所有需要計算的客戶服務(ID客戶服務)
-        $serviceRowsID = Yii::app()->db->createCommand()
-            ->select("{$selectSql},CONCAT('M') as paid_type,CONCAT('M') as b4_paid_type,CONCAT('D') as sql_type_name")
-            ->from("swoper$suffix.swo_serviceid a")
-            ->leftJoin("swoper$suffix.swo_customer_type_id f","a.cust_type=f.id")
-            ->leftJoin("swo_nature g","a.nature_type=g.id")
-            ->where("not(f.rpt_cat='INV' and f.single=1) and a.city in ({$city_allow}) and a.city not in ('ZY') and a.status='T' and ({$where})")
-            ->order("a.city")
-            ->queryAll();
+        $serviceRowsID = array();
         $serviceRows = $serviceRows?$serviceRows:array();
         $serviceRowsID = $serviceRowsID?$serviceRowsID:array();
         $rows = array_merge($serviceRows,$serviceRowsID);
