@@ -15,7 +15,8 @@ class SummaryForm extends CFormModel
     public $day_num=0;
 	public $summary_year;
 
-	private $con_list=array("one_gross","one_net","two_gross","two_net","three_gross","three_net");
+	public $last_month_start;
+	public $last_month_end;
 
 	public $data=array();
 
@@ -95,6 +96,9 @@ class SummaryForm extends CFormModel
                 }
                 break;
         }
+        //上月的開始及結束時間
+        $this->last_month_start = CountSearch::computeLastMonth($this->start_date);
+        $this->last_month_end = CountSearch::computeLastMonth($this->end_date);
     }
 
     public function setCriteria($criteria)
@@ -128,44 +132,6 @@ class SummaryForm extends CFormModel
 		return $city;
 	}
 
-    //获取U系统的服务单数据
-    public static function getUActualMoney($startDay,$endDay,$city_allow="",$citySetList=array()){
-	    $list = array();
-	    $citySql = "";
-	    if(!empty($city_allow)){
-	        $citySql = " and IF(b.Text='KL' or b.Text='SL','MY',b.Text) in ({$city_allow})";
-        }
-        $suffix = Yii::app()->params['envSuffix'];
-        $rows = Yii::app()->db->createCommand()
-            ->select("b.Text,sum(
-                    if(a.TermCount=0,0,a.Fee/a.TermCount)
-					) as sum_amount")
-            ->from("service{$suffix}.joborder a")
-            ->leftJoin("service{$suffix}.officecity f","a.City = f.City")
-            ->leftJoin("service{$suffix}.enums b","f.Office = b.EnumID and b.EnumType=8")
-            ->where("a.Status=3 and a.JobDate BETWEEN '{$startDay}' AND '{$endDay}' {$citySql}")
-            ->group("b.Text")
-            ->queryAll();
-        if($rows){
-            foreach ($rows as $row){
-                $city = SummaryForm::resetCity($row["Text"]);
-                $money = empty($row["sum_amount"])?0:round($row["sum_amount"],2);
-                if(!key_exists($city,$list)){
-                    $list[$city]=0;
-                }
-                $list[$city]+=$money;
-                if(key_exists($city,$citySetList)&&$citySetList[$city]["add_type"]==1){//城市配置（叠加)
-                    $city=$citySetList[$city]["region_code"];
-                    if(!key_exists($city,$list)){
-                        $list[$city]=0;
-                    }
-                    $list[$city]+=$money;
-                }
-            }
-        }
-        return $list;
-    }
-
     public function retrieveData() {
         $this->summary_year = date("Y",strtotime($this->start_date));
 	    $rptModel = new RptSummarySC();
@@ -179,42 +145,17 @@ class SummaryForm extends CFormModel
         $rptModel->criteria = $criteria;
         $rptModel->retrieveData();
         $this->data = $rptModel->data;
-        $citySetList = CitySetForm::getCitySetList($city_allow);
-        $uActualMoneyList = SummaryForm::getUActualMoney($this->start_date,$this->end_date,$city_allow,$citySetList);
+        //获取U系统的服务单数据
+        $uActualMoneyList = CountSearch::getUServiceMoney($this->start_date,$this->end_date,$city_allow);
         if($this->data){
-            $strSelect = implode(",",$this->con_list);
-
             foreach ($this->data as $regionKey=>$regionList){
                 if(!empty($regionList["list"])){
                     foreach ($regionList["list"] as $cityKey=>$cityList){
                         $this->data[$regionKey]["list"][$cityKey]["u_actual_money"]+=key_exists($cityKey,$uActualMoneyList)?$uActualMoneyList[$cityKey]:0;//实际月金额
-                        $this->data[$regionKey]["list"][$cityKey]["u_actual_money"]+=$this->data[$regionKey]["list"][$cityKey]["u_invoice_sum"];//服务生意额需要加上产品金额
+                        $this->data[$regionKey]["list"][$cityKey]["u_actual_money"]+=$this->data[$regionKey]["list"][$cityKey]["u_invoice_num"];//服务生意额需要加上产品金额
                         $this->data[$regionKey]["list"][$cityKey]["num_growth"]=0;//净增长
-                        foreach ($this->con_list as $itemStr){//初始化
-                            $this->data[$regionKey]["list"][$cityKey][$itemStr]=0;
-                            $this->data[$regionKey]["list"][$cityKey][$itemStr."_rate"]=0;
-                            $this->data[$regionKey]["list"][$cityKey]["start_".$itemStr]=0;
-                            $this->data[$regionKey]["list"][$cityKey]["start_".$itemStr."_rate"]=0;
-                        }
-                        //放入目标金额
-                        $rowStart = Yii::app()->db->createCommand()->select($strSelect)->from("swo_comparison_set")
-                            ->where("comparison_year=:year and month_type=:month_type and city=:city",
-                                array(":year"=>$this->summary_year,":month_type"=>1,":city"=>$cityKey)
-                            )->queryRow();//年初生意额目标
-                        if($rowStart){
-                            foreach ($this->con_list as $itemStr){//写入年初生意额
-                                $this->data[$regionKey]["list"][$cityKey]["start_".$itemStr]=empty($rowStart[$itemStr])?0:floatval($rowStart[$itemStr]);
-                            }
-                        }
-                        $row = Yii::app()->db->createCommand()->select($strSelect)->from("swo_comparison_set")
-                            ->where("comparison_year=:year and month_type=:month_type and city=:city",
-                                array(":year"=>$this->summary_year,":month_type"=>$this->month_type,":city"=>$cityKey)
-                            )->queryRow();//滚动生意额目标
-                        if($row){
-                            foreach ($this->con_list as $itemStr){//写入滚动生意额
-                                $this->data[$regionKey]["list"][$cityKey][$itemStr]=empty($row[$itemStr])?0:floatval($row[$itemStr]);
-                            }
-                        }
+
+                        ComparisonForm::setComparisonConfig($this->data[$regionKey]["list"][$cityKey],$this->summary_year,$this->month_type,$cityKey);
                     }
                 }
             }
@@ -230,6 +171,7 @@ class SummaryForm extends CFormModel
         $list["num_growth"] = 0;
 	    $list["num_growth"]+=$list["num_new"];
 	    $list["num_growth"]+=$list["u_invoice_sum"];
+	    $list["num_growth"]+=$list["last_month_sum"];
 	    $list["num_growth"]+=$list["num_stop"];
 	    $list["num_growth"]+=$list["num_restore"];
 	    $list["num_growth"]+=$list["num_pause"];
@@ -289,8 +231,9 @@ class SummaryForm extends CFormModel
             array("name"=>Yii::t("summary","Actual monthly amount"),"rowspan"=>2),//服务生意额
             array("name"=>Yii::t("summary","Signing status"),"background"=>"#f7fd9d",
                 "colspan"=>array(
-                    array("name"=>Yii::t("summary","New(service)")),//新增服务
-                    array("name"=>Yii::t("summary","New(INV)")),//新增（产品）
+                    array("name"=>Yii::t("summary","New(not single)")),//新增服务(除一次性服务)
+                    array("name"=>Yii::t("summary","New(single) + New(INV)")),//一次性服务+新增（产品）
+                    array("name"=>Yii::t("summary","Last Month Single + New(INV)")),//上月一次性服务+新增产品
                     array("name"=>Yii::t("summary","Terminate service")),//终止服务
                     array("name"=>Yii::t("summary","Resume service")),//恢复服务
                     array("name"=>Yii::t("summary","Suspended service")),//暂停服务
@@ -302,6 +245,7 @@ class SummaryForm extends CFormModel
                 "colspan"=>array(
                     array("name"=>Yii::t("summary","long month")),//长约（>=12月）
                     array("name"=>Yii::t("summary","short month")),//短约
+                    array("name"=>Yii::t("summary","one service")),//一次性服务
                     array("name"=>Yii::t("summary","cate service")),//餐饮客户
                     array("name"=>Yii::t("summary","not cate service")),//非餐饮客户
                 )
@@ -313,6 +257,12 @@ class SummaryForm extends CFormModel
                 )
             ),//新增客户（产品）
         );
+        $topList[]=array("name"=>Yii::t("summary","added last month"),"background"=>"#f7fd9d",
+            "colspan"=>array(
+                array("name"=>Yii::t("summary","one service")),//一次性服务
+                array("name"=>Yii::t("summary","New(INV)")),//新增（产品）
+            )
+        );//上月新增
         $colspan=array(
             array("name"=>Yii::t("summary","Start Gross")),//Start Gross
             array("name"=>Yii::t("summary","Start Net")),//Start Net
@@ -389,11 +339,11 @@ class SummaryForm extends CFormModel
     private function tableHeaderWidth(){
         $html="<tr>";
         for($i=0;$i<$this->th_sum;$i++){
-            if(in_array($i,array(2,4,5,6,7,8))){
+            if(in_array($i,array(2,9,5,6,7,8))){
                 $width=75;
-            }elseif($i==9){
+            }elseif($i==10){
                 $width=110;
-            }elseif(in_array($i,array(1,3,12,14))){
+            }elseif(in_array($i,array(1,3,13,15))){
                 $width=90;
             }else{
                 $width=83;
@@ -419,9 +369,11 @@ class SummaryForm extends CFormModel
     //获取td对应的键名
     private function getDataAllKeyStr(){
         $bodyKey = array(
-            "city_name","u_actual_money","num_new","u_invoice_sum","num_stop","num_restore","num_pause","num_update",
-            "num_growth","num_long","num_short","num_cate","num_not_cate","u_num_cate","u_num_not_cate"
+            "city_name","u_actual_money","num_new","u_invoice_sum","last_month_sum","num_stop","num_restore","num_pause","num_update",
+            "num_growth","num_long","num_short","one_service","num_cate","num_not_cate","u_num_cate","u_num_not_cate"
         );
+        $bodyKey[]="last_one_service";
+        $bodyKey[]="last_u_invoice_sum";
         if(SummaryForm::targetReadyUpside()){
             $bodyKey[]="start_one_gross";
             $bodyKey[]="start_one_net";
@@ -479,7 +431,9 @@ class SummaryForm extends CFormModel
                     $text = ComparisonForm::showNum($text);
                     $inputHide = TbHtml::hiddenField("excel[MO][{$keyStr}]",$text);
                     $tdClass = ComparisonForm::getTextColorForKeyStr($text,$keyStr);
-                    $html.="<td class='{$tdClass}'><span>{$text}</span>{$inputHide}</td>";
+                    $exprData = self::tdClick($tdClass,$keyStr,$cityList["city"]);//点击后弹窗详细内容
+                    ComparisonForm::setTextColorForKeyStr($tdClass,$keyStr,$cityList);
+                    $html.="<td class='{$tdClass}' {$exprData}><span>{$text}</span>{$inputHide}</td>";
                 }
                 $html.="</tr>";
             }
@@ -590,13 +544,31 @@ class SummaryForm extends CFormModel
         $excel->outExcel(Yii::t("app","Summary"));
     }
 
+    protected function clickList(){
+        return array(
+            "last_u_invoice_sum"=>array("title"=>Yii::t("summary","New(INV)")."(".Yii::t("summary","added last month").")","type"=>"ServiceINVLast"),
+            "u_num_not_cate"=>array("title"=>Yii::t("summary","not cate service")." ".Yii::t("summary","New(INV)"),"type"=>"ServiceINVCateNot"),
+            "u_num_cate"=>array("title"=>Yii::t("summary","cate service")." ".Yii::t("summary","New(INV)"),"type"=>"ServiceINVCate"),
+            "last_month_sum"=>array("title"=>Yii::t("summary","Last Month Single + New(INV)"),"type"=>"ServiceINVMonthNew"),
+            "u_invoice_sum"=>array("title"=>Yii::t("summary","New(single) + New(INV)"),"type"=>"ServiceINVNew"),
+
+            "num_cate"=>array("title"=>Yii::t("summary","cate service"),"type"=>"ServiceCate"),
+            "num_not_cate"=>array("title"=>Yii::t("summary","not cate service"),"type"=>"ServiceCateNot"),
+            "num_long"=>array("title"=>Yii::t("summary","long month"),"type"=>"ServiceLong"),
+            "num_short"=>array("title"=>Yii::t("summary","short month"),"type"=>"ServiceShort"),
+            "one_service"=>array("title"=>Yii::t("summary","one service"),"type"=>"ServiceOne"),
+            "last_one_service"=>array("title"=>Yii::t("summary","one service")."(".Yii::t("summary","added last month").")","type"=>"ServiceOneLast"),
+            "num_update"=>array("title"=>Yii::t("summary","Amendment service"),"type"=>"ServiceAmendment"),
+            "num_new"=>array("title"=>Yii::t("summary","New(service)"),"type"=>"ServiceNew"),
+            "num_pause"=>array("title"=>Yii::t("summary","Suspended service"),"type"=>"ServiceSuspended"),
+            "num_restore"=>array("title"=>Yii::t("summary","Resume service"),"type"=>"ServiceRenewal"),
+            "num_stop"=>array("title"=>Yii::t("summary","Terminate service"),"type"=>"ServiceStop"),
+        );
+    }
+
     private function tdClick(&$tdClass,$keyStr,$city){
         $expr = " data-city='{$city}'";
-        $list = array(
-            "num_pause"=>array("title"=>Yii::t("summary","Suspended service"),"type"=>"S"),
-            "num_restore"=>array("title"=>Yii::t("summary","Resume service"),"type"=>"R"),
-            "num_stop"=>array("title"=>Yii::t("summary","Terminate service"),"type"=>"T"),
-        );
+        $list = $this->clickList();
         if(key_exists($keyStr,$list)){
             $tdClass.=" td_detail";
             $expr.= " data-type='{$list[$keyStr]['type']}'";
@@ -604,71 +576,6 @@ class SummaryForm extends CFormModel
         }
 
         return $expr;
-    }
-
-    //顯示表格內的數據來源
-    public function ajaxDetailForHtml(){
-        $city = key_exists("city",$_GET)?$_GET["city"]:0;
-        $city_allow = "'{$city}'";
-        $type = key_exists("type",$_GET)?$_GET["type"]:"";
-        $startDate = key_exists("startDate",$_GET)?$_GET["startDate"]:"";
-        $endDate = key_exists("endDate",$_GET)?$_GET["endDate"]:"";
-        $rows = RptSummarySC::getSRTRowsAll($city_allow,$startDate,$endDate,$type);
-        $companyList = GetNameToId::getCompanyList($city_allow);
-
-        $html = "<table class='table table-bordered table-striped table-hover'>";
-        $html.="<thead><tr>";
-        $html.="<th width='90px'>".Yii::t('service','Contract No')."</th>";//合同编号
-        $html.="<th width='90px'>".Yii::t('summary','search day')."</th>";//日期
-        $html.="<th>".Yii::t('service','Customer')."</th>";//客户编号及名称
-        $html.="<th width='80px'>".Yii::t('service','Customer Type')."</th>";//客户类别
-        $html.="<th width='120px'>".Yii::t('service','Paid Amt')."</th>";//服务金额
-        $html.="<th width='80px'>".Yii::t('customer','Contract Period')."</th>";//合同年限(月)
-        $html.="<th width='100px'>".Yii::t('service','all money')."</th>";//合同总金额
-        $html.="<th width='1px'></th>";
-        $html.="</tr></thead>";
-        if($rows){
-            $sum = 0;
-            $html.="<tbody>";
-            foreach ($rows as $row){
-                if($row["sql_type_name"]=="D"){//ID服务
-                    $link = self::drawEditButton('A11', 'serviceID/edit', 'serviceID/view', array('index'=>$row['id']));
-                }else{
-                    $link = self::drawEditButton('A02', 'service/edit', 'service/view', array('index'=>$row['id']));
-                }
-                $companyName = key_exists($row["company_id"],$companyList)?$companyList[$row["company_id"]]["codeAndName"]:$row["company_id"];
-                $row["amt_paid"] = is_numeric($row["amt_paid"])?floatval($row["amt_paid"]):0;
-                $row["ctrt_period"] = is_numeric($row["ctrt_period"])?floatval($row["ctrt_period"]):0;
-
-                if($row["paid_type"]=="M") {//月金额
-                    $row["sum_amount"] = $row["amt_paid"]*$row["ctrt_period"];
-                }else{
-                    $row["sum_amount"] = $row["amt_paid"];
-                }
-                $row["sum_amount"]=round($row["sum_amount"],2);
-                $sum+=$row["sum_amount"];
-                $html.="<tr data-id='{$row["id"]}'>";
-                $html.="<td>".$row["contract_no"]."</td>";
-                $html.="<td>".General::toDate($row["status_dt"])."</td>";
-                $html.="<td>".$companyName."</td>";
-                $html.="<td>".$row["cust_type_name"]."</td>";
-                $html.="<td class='text-right'>(".GetNameToId::getPaidTypeForId($row["paid_type"]).") ".$row["amt_paid"]."</td>";
-                $html.="<td>".$row["ctrt_period"]."</td>";
-                $html.="<td class='text-right'>".$row["sum_amount"]."</td>";
-                $html.="<td>{$link}</td>";
-                $html.="</tr>";
-            }
-            $html.="</tbody><tfoot>";
-            $html.="<tr>";
-            $html.="<td colspan='6' class='text-right'>汇总：</td>";
-            $html.="<td colspan='2'>".$sum."</td>";
-            $html.="</tr>";
-            $html.="</tfoot>";
-        }else{
-            $html.="<tbody><tr><td colspan='8'>无数据</td></tr></tbody>";
-        }
-        $html.="</table>";
-        return $html;
     }
 
     public static function drawEditButton($access, $writeurl, $readurl, $param) {
