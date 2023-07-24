@@ -2,7 +2,7 @@
 $this->pageTitle=Yii::app()->name . ' - Service Form';
 ?>
 <?php $form=$this->beginWidget('TbActiveForm', array(
-'id'=>'service-form',
+'id'=>'service-form', 
 'enableClientValidation'=>true,
 'clientOptions'=>array('validateOnSubmit'=>true,),
 'layout'=>TbHtml::FORM_LAYOUT_HORIZONTAL,
