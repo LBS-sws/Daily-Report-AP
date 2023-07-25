@@ -157,7 +157,7 @@ class SummaryTable extends SummaryForm{
         $html.="<th width='80px'>".Yii::t('service','Customer Type')."</th>";//客户类别
         $html.="<th width='120px'>".Yii::t('service','Paid Amt')."</th>";//服务金额
         $html.="<th width='80px'>".Yii::t('customer','Contract Period')."</th>";//合同年限(月)
-        $html.="<th width='100px'>".Yii::t('service','all money')."</th>";//合同总金额
+        $html.="<th width='100px'>".Yii::t('summary','all money')."</th>";//合同总金额
         $html.="<th width='1px'></th>";
         $html.="</tr></thead>";
         if($rows){
