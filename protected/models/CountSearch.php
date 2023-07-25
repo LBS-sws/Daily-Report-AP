@@ -417,8 +417,12 @@ class CountSearch{
     public static function getUServiceMoney($startDay,$endDay,$city_allow=""){
         $list = array();
         $citySql = "";
+        $textSql = "b.Text";
+        if(self::$system==2){//國際版
+            $textSql = "IF(b.Text='KL' or b.Text='SL','MY',b.Text)";
+        }
         if(!empty($city_allow)&&$city_allow!="all"){
-            $citySql = " and b.Text in ({$city_allow})";
+            $citySql = " and {$textSql} in ({$city_allow})";
         }
         $suffix = Yii::app()->params['envSuffix'];
         $rows = Yii::app()->db->createCommand()
@@ -526,8 +530,12 @@ class CountSearch{
         }
         $list = array();
         $citySql = "";
+        $textSql = "b.Text";
+        if(self::$system==2){//國際版
+            $textSql = "IF(b.Text='KL' or b.Text='SL','MY',b.Text)";
+        }
         if(!empty($city_allow)&&$city_allow!="all"){
-            $citySql = " and b.Text in ({$city_allow})";
+            $citySql = " and {$textSql} in ({$city_allow})";
         }
         $suffix = Yii::app()->params['envSuffix'];
         $rows = Yii::app()->db->createCommand()
