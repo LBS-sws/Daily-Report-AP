@@ -493,6 +493,9 @@ class CountSearch{
         if(!empty($city_allow)&&$city_allow!="all"){
             $city = $city_allow;
         }
+        if(self::$system===2&&!empty($city)&&strpos($city,"'MY'")!==false){//國際版
+            $city.=",'KL','SL'";
+        }
         $json = Invoice::getInvData($startDay,$endDay,$city);
         $list = array();
         if($json["message"]==="Success"){
@@ -822,6 +825,9 @@ class CountSearch{
         $city = "";
         if(!empty($city_allow)&&$city_allow!="all"){
             $city = $city_allow;
+        }
+        if(self::$system===2&&!empty($city)&&strpos($city,"'MY'")!==false){//國際版
+            $city.=",'KL','SL'";
         }
         $year = date("Y",strtotime($endDay));
         $maxMonth = date("n",strtotime($endDay));
