@@ -498,6 +498,7 @@ class CountSearch{
         }
         $json = Invoice::getInvData($startDay,$endDay,$city);
         $list = array();
+        $Catering = self::$system===2?"Catering":"餐饮类";
         if($json["message"]==="Success"){
             $jsonData = $json["data"];
             foreach ($jsonData as $row){
@@ -511,7 +512,7 @@ class CountSearch{
                     );
                 }
                 $list[$city]["sum_money"]+=$money;
-                if($row["customer_type"]==="餐饮类"){
+                if($row["customer_type"]===$Catering){
                     $list[$city]["u_num_cate"]+=$money;
                 }else{
                     $list[$city]["u_num_not_cate"]+=$money;
