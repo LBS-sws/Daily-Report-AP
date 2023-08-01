@@ -10,12 +10,25 @@ class CountSearch{
 
     private static $system=2;//0:大陸 1:台灣 2:國際
 
+    public static function getSystem(){
+        return self::$system;
+    }
+
     //獲取暫停、終止的最後一條記錄(一条服务在一个月内只能存在一条暂停和终止)，特例：暫停→恢復→終止（三個都需要計算）
-    public static function getServiceForST($start_dt,$end_dt,$city_allow){
+    public static function getServiceForST($start_dt,$end_dt,$city_allow,$type="all"){
         $list = array();
         $sum_money = "case b.paid_type when 'M' then b.amt_paid * b.ctrt_period else b.amt_paid end";
-
-        $whereSql = "b.status in ('S','T') and b.status_dt BETWEEN '{$start_dt}' and '{$end_dt}'";
+        switch ($type){
+            case "S"://暫停
+                $whereSql="b.status='S'";
+                break;
+            case "T"://終止
+                $whereSql="b.status='T'";
+                break;
+            default://暫停+終止
+                $whereSql="b.status in ('S','T')";
+        }
+        $whereSql.= " and b.status_dt BETWEEN '{$start_dt}' and '{$end_dt}'";
         if(!empty($city_allow)&&$city_allow!="all"){
             $whereSql.= " and b.city in ({$city_allow})";
         }
@@ -662,7 +675,7 @@ class CountSearch{
     }
 
     //獲取暫停、終止（月為鍵名)
-    public static function getServiceForSTToMonth($end_dt,$city_allow){
+    public static function getServiceForSTToMonth($end_dt,$city_allow,$type="all"){
         $year = date("Y",strtotime($end_dt));
         $start_dt =$year."/01/01";
         $maxMonth = date("n",strtotime($end_dt));
@@ -673,8 +686,17 @@ class CountSearch{
         }
         $list = array();
         $sum_money = "case b.paid_type when 'M' then b.amt_paid * b.ctrt_period else b.amt_paid end";
-
-        $whereSql = "b.status in ('S','T') and b.status_dt BETWEEN '{$start_dt}' and '{$end_dt}'";
+        switch ($type){
+            case "S"://暫停
+                $whereSql="b.status='S'";
+                break;
+            case "T"://終止
+                $whereSql="b.status='T'";
+                break;
+            default://暫停+終止
+                $whereSql="b.status in ('S','T')";
+        }
+        $whereSql.= " and b.status_dt BETWEEN '{$start_dt}' and '{$end_dt}'";
         if(!empty($city_allow)&&$city_allow!="all"){
             $whereSql.= " and b.city in ({$city_allow})";
         }
@@ -821,7 +843,7 @@ class CountSearch{
     //获取U系统的產品数据（月為鍵名)
     public static function getUInvMoneyToMonth($endDay,$city_allow=""){
         if(self::$system===1){//台灣版的產品為lbs的inv新增
-            return self::getServiceTWForAdd($endDay,$city_allow);
+            return self::getUInvTWMoneyToMonth($endDay,$city_allow);
         }
         $city = "";
         if(!empty($city_allow)&&$city_allow!="all"){
