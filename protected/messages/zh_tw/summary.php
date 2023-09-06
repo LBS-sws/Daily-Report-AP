@@ -156,6 +156,7 @@ return array(
     'comparison_remark_14_1'=>'14、滾動淨增長 = 地區對應季度的淨增長目標 + 對應季度的淨增長目標 * 2 * 80%',
     'comparison_remark_15'=>'15、目標完成度（滾動新生意）=  新增金額 / 滾動新生意目標 * 100%',
     'comparison_remark_16'=>'16、目標完成度（滾動淨增長）=  淨增金額  / 滾動淨增長目標 * 100%',
+    'comparison_remark_13_new'=>'13、月停單率 = 【“一次性服務+新增（產品）” + “上月一次性服務+新增產品” + 終止金額 】/ 12 / 服務生意額',
 
     'staff office'=>'辦事處',
     'office Name'=>'辦事處名稱',
@@ -186,5 +187,15 @@ return array(
     'Customer Type'=>'U系統客戶類別',
     'INV Amt'=>'U系統產品金額',
     'all money'=>'合同总金额',
+    'job date'=>'工作日期',
+    'Contract Code'=>'合約編號',
+    'U Customer Code'=>'客戶編號',
+    'Customer Name'=>'客戶公司',
+    'Technical'=>'技術員',
+    'city name'=>'城市',
+    'city'=>'市',
+    'district'=>'區',
+    'address'=>'地址',
+    'menu name'=>'菜單名稱',
 );
 ?>
