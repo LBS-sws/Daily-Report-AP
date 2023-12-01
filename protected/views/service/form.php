@@ -57,6 +57,14 @@ $this->pageTitle=Yii::app()->name . ' - Service Form';
 		);
 	?>
 	</div>
+            <?php if ($model->scenario!='new'): ?>
+                <div class="btn-group pull-right" role="group">
+                    <?php echo TbHtml::button('<span class="fa fa-list"></span> '.Yii::t('service','Flow Info'), array(
+                            'data-toggle'=>'modal','data-target'=>'#flowinfodialog',)
+                    );
+                    ?>
+                </div>
+            <?php endif ?>
 	</div></div>
 
 <?php
@@ -565,6 +573,7 @@ $this->pageTitle=Yii::app()->name . ' - Service Form';
 				));
 ?>
 
+<?php $this->renderPartial('//service/historylist',array("model"=>$model)); ?>
 <?php $this->renderPartial('//site/removedialog'); ?>
 <?php $this->renderPartial('//site/lookup'); ?>
 <?php $this->renderPartial('//site/fileupload',array('model'=>$model,

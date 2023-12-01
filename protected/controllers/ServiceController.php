@@ -104,12 +104,16 @@ class ServiceController extends Controller
             $model->all_number = 0;
 			$model->org_equip_qty = 0;
 			$model->rtn_equip_qty = 0;
+            $model->other_commission = null;
+            $model->commission = null;
 			$model->id = 0;
 			$model->files = '';
 			$model->docMasterId['service'] = 0;
 			$model->removeFileId['service'] = 0;
 			$model->no_of_attm['service'] = 0;
 		}
+        $model->commission=null;
+        $model->other_commission=null;
 		$model->status = 'N';
 		$model->status_desc = $model->getStatusDesc();
 		$model->status_dt = date('Y/m/d');
@@ -131,6 +135,8 @@ class ServiceController extends Controller
             $model->surplus = 0;
             $model->all_number = 0;
 			$model->rtn_equip_qty = 0;
+            $model->other_commission = null;
+            $model->commission = null;
 			$model->sign_dt = null;
 			$model->equip_install_dt = null;
 			$model->ctrt_end_dt = null;
@@ -180,6 +186,8 @@ class ServiceController extends Controller
 			$model->equip_install_dt = null;
 			$model->org_equip_qty = 0;
 			$model->rtn_equip_qty = 0;
+			$model->other_commission = null;
+			$model->commission = null;
 			$model->id = 0;
 			$model->files = '';
 			$model->docMasterId['service'] = 0;
@@ -212,6 +220,8 @@ class ServiceController extends Controller
 			$model->equip_install_dt = null;
 			$model->org_equip_qty = 0;
 			$model->rtn_equip_qty = 0;
+            $model->other_commission = null;
+            $model->commission = null;
 			$model->id = 0;
 			$model->files = '';
 			$model->docMasterId['service'] = 0;
@@ -243,6 +253,8 @@ class ServiceController extends Controller
 			$model->first_tech = '';
 			$model->remarks = '';
 			$model->equip_install_dt = null;
+            $model->other_commission = null;
+            $model->commission = null;
 			$model->id = 0;
 			$model->files = '';
 			$model->docMasterId['service'] = 0;
@@ -274,6 +286,8 @@ class ServiceController extends Controller
 			$model->first_tech = '';
 			$model->remarks = '';
 			$model->equip_install_dt = null;
+            $model->other_commission = null;
+            $model->commission = null;
 			$model->id = 0;
 			$model->files = '';
 			$model->docMasterId['service'] = 0;
@@ -292,10 +306,18 @@ class ServiceController extends Controller
 		$model = new ServiceForm('delete');
 		if (isset($_POST['ServiceForm'])) {
 			$model->attributes = $_POST['ServiceForm'];
-			$model->saveData();
-			Dialog::message(Yii::t('dialog','Information'), Yii::t('dialog','Record Deleted'));
-		}
-		$this->redirect(Yii::app()->createUrl('service/index'));
+            if ($model->validate()) {
+                $model->saveData();
+                Dialog::message(Yii::t('dialog','Information'), Yii::t('dialog','Record Deleted'));
+                $this->redirect(Yii::app()->createUrl('service/index'));
+            }else{
+                $message = CHtml::errorSummary($model);
+                Dialog::message(Yii::t('dialog','Validation Message'), $message);
+                $this->redirect(Yii::app()->createUrl('service/edit',array("index"=>$model->id)));
+            }
+		}else{
+            $this->redirect(Yii::app()->createUrl('service/index'));
+        }
 	}
 /*
 	public function actionFileupload() {

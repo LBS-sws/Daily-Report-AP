@@ -11,11 +11,12 @@ class ListPageWidget extends CWidget
 	public $hasNavBar = true;
 	public $hasSearchBar = true;
 	public $hasPageBar = true;
-	public $search_add_html = '';
 	public $searchlinkparam = array();
+    public $search_add_html = '';
 	public $city=array();
 	public $advancedSearch = false;
-	
+	public $item_bool = false;
+
 	public $hasDateButton = false;
 	
 	public $record;
@@ -46,6 +47,9 @@ class ListPageWidget extends CWidget
 				$layout .= '<span class="pull-right">';
 				$layout .= $this->searchBar();
 				$layout .= '</span>';
+                if(!empty($this->search_add_html)){
+                    $layout.="<span class='pull-right' style='margin-right: 15px;'>".$this->search_add_html."</span>";
+                }
 				if(!empty($this->city)){
                     $layout.="<select id='MonthList_searchField' class='form-control' name='MonthList[city]' style='float:right;margin-right: 15px'> ";
                     $layout.="<option value=''>-- 城市 --</option>";
@@ -61,13 +65,15 @@ class ListPageWidget extends CWidget
                     }
                     $layout.="</select>";
                 }
-                if(!empty($this->search_add_html)){
-                    $layout.="<span class='pull-right' style='margin-right: 15px;'>".$this->search_add_html."</span>";
-                }
 
 			}
 		$layout .= '</div>';
-		}
+		}else{
+
+            if(!empty($this->search_add_html)){
+                $layout.="<div class=\"box-tools\"><span class='pull-right' style='margin-right: 15px;'>".$this->search_add_html."</span></div>";
+            }
+        }
 		$layout .= '<div><table id="tblData" class="table table-hover">';
 		$layout .= '<thead>';
 		$layout .= $this->render($this->viewhdr, null, true);
@@ -90,7 +96,7 @@ class ListPageWidget extends CWidget
 		$layout .= '</div>';
 		
 		$layout .= '<div class="box-footer clearfix">';
-		if ($this->hasSearchBar) {
+		if ($this->hasSearchBar||$this->item_bool) {
 			$layout .= '<div class="box-tools">'.$this->pageBar().'</div>';
 		}
 

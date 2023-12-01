@@ -9,9 +9,12 @@ class ServiceForm extends CFormModel
 {
 	/* User Fields */
 	public $id;
+	public $service_no;
+	public $service_new_id=0;
 	public $company_id;
 	public $company_name;
 	public $nature_type;
+	public $nature_type_two;
 	public $cust_type;
     public $cust_type_name;
     public $pieces=0;
@@ -22,13 +25,16 @@ class ServiceForm extends CFormModel
 	public $amt_install;
 	public $need_install;
 	public $salesman;
+	public $salesman_id;
     public $technician;
+    public $technician_id;
 	public $sign_dt;
 	public $ctrt_end_dt;
 	public $ctrt_period=12;
 	public $cont_info;
 	public $first_dt;
 	public $first_tech;
+	public $first_tech_id;
 	public $reason;
 	public $status;
 	public $status_dt;
@@ -55,12 +61,16 @@ class ServiceForm extends CFormModel
 	public $b4_paid_type;
 	public $b4_amt_paid;
 	public $othersalesman;
+	public $othersalesman_id;
 	public $status_desc;
 	public $backlink;
 	public $prepay_month=0;
 	public $prepay_start=0;
     public $contract_no;
-	
+    public $commission;
+    public $other_commission;
+    public $tracking;
+
 	public $files;
 
 	public $docMasterId = array(
@@ -76,7 +86,12 @@ class ServiceForm extends CFormModel
 	public function init() {
 		$this->city = Yii::app()->user->city();
 	}
-	
+	public $send;
+	public $lcd;
+	public $lud;
+	public $lcu;
+	public $luu;
+
 	/**
 	 * Declares customized attribute labels.
 	 * If not declared here, an attribute would have a label that is
@@ -86,31 +101,44 @@ class ServiceForm extends CFormModel
 	{
 		return array(
 			'id'=>Yii::t('service','Record ID'),
+            'service_no'=>Yii::t('service','service no'),
+			'company_id'=>Yii::t('service','Customer')." ID",
 			'company_name'=>Yii::t('service','Customer'),
 			'service'=>Yii::t('service','Service'),
+			'product_id'=>Yii::t('service','Service'),
 			'nature_type'=>Yii::t('service','Nature'),
+			'nature_type_two'=>Yii::t('service','Nature'),
 			'cust_type'=>Yii::t('service','Customer Type'),
+			'cust_type_name'=>Yii::t('service','Customer Type'),
 			'amt_paid'=>Yii::t('service','Paid Amt'),
+			'paid_type'=>Yii::t('service','Paid Amt Type'),
 			'amt_install'=>Yii::t('service','Installation Fee'),
 			'need_install'=>Yii::t('service','Installation'),
+			'salesman_id'=>Yii::t('service','Resp. Sales')." ID",
 			'salesman'=>Yii::t('service','Resp. Sales'),
             'othersalesman'=>Yii::t('service','OtherSalesman'),
+            'othersalesman_id'=>Yii::t('service','OtherSalesman'),
             'technician'=>Yii::t('service','Resp. Tech.'),
+            'technician_id'=>Yii::t('service','Resp. Tech.'),
 			'sign_dt'=>Yii::t('service','Sign Date'),
 			'ctrt_end_dt'=>Yii::t('service','Contract End Date'),
 			'ctrt_period'=>Yii::t('service','Contract Period'),
 			'cont_info'=>Yii::t('service','Contact'),
 			'first_dt'=>Yii::t('service','First Service Date'),
 			'first_tech'=>Yii::t('service','First Service Tech.'),
+			'first_tech_id'=>Yii::t('service','First Service Tech.'),
 			'reason'=>Yii::t('service','Reason'),
 			'status'=>Yii::t('service','Record Type'),
 			'status_dt'=>Yii::t('service','Record Date'),
 			'remarks'=>Yii::t('service','Cross Area Remarks'),
 			'remarks2'=>Yii::t('service','Remarks'),
 			'b4_service'=>Yii::t('service','Service (Before)'),
+			'b4_product_id'=>Yii::t('service','Service (Before)'),
 			'b4_amt_paid'=>Yii::t('service','Payment  (Before)'),
+			'b4_paid_type'=>Yii::t('service','Payment  (Before)'),
 			'af_service'=>Yii::t('service','Service (After)'),
 			'af_amt_paid'=>Yii::t('service','Paid Amt (After)'),
+			'af_paid_type'=>Yii::t('service','Paid Amt (After)'),
 			'equip_install_dt'=>Yii::t('service','Installation Date'),
 			'org_equip_qty'=>Yii::t('service','Org. Equip. Qty'),
 			'rtn_equip_qty'=>Yii::t('service','Return Equip. Qty'),
@@ -134,6 +162,11 @@ class ServiceForm extends CFormModel
             'prepay_month'=>Yii::t('service','Prepay Month'),
             'prepay_start'=>Yii::t('service','Prepay Start'),
             'contract_no'=>Yii::t('service','Contract No'),
+            'tracking'=>Yii::t('service','tracking'),
+            'lcu'=>Yii::t('service','lcu'),
+            'luu'=>Yii::t('service','luu'),
+            'lcd'=>Yii::t('service','lcd'),
+            'lud'=>Yii::t('service','lud'),
 		);
 	}
 
@@ -163,8 +196,29 @@ class ServiceForm extends CFormModel
 			array('status_dt','date','allowEmpty'=>false,
 				'format'=>array('yyyy/MM/dd','yyyy-MM-dd','yyyy/M/d','yyyy-M-d',),
 			),
+            array('id','validateID'),
+            array('id','validateAutoFinish'),
+            array('status_dt','validateVisitDt','on'=>array('new')),
 		);
 	}
+
+    //驗證该服务是否已经参加销售提成计算
+    public function validateID($attribute, $params) {
+    }
+
+    //驗證新增時是否有該服務
+    public function validateAutoFinish($attribute, $params){
+    }
+
+    public function validateVisitDt($attribute, $params) {
+        $visit_dt = date("Y-m-d",strtotime($this->status_dt));
+        $nowDate = date("Y-m-d");
+        $firstDate = date("Y-m-01",strtotime($nowDate));
+        $firstDate = date("Y-m-01",strtotime("$firstDate - 2 month"));
+        if($visit_dt<$firstDate){
+            $this->addError($attribute, "新增日期必须大于".$firstDate);
+        }
+    }
 
 	public function retrieveData($index)
 	{
@@ -179,7 +233,7 @@ class ServiceForm extends CFormModel
 		if (count($rows) > 0) {
 			foreach ($rows as $row) {
 				$this->id = $row['id'];
-				$this->company_id = $row['company_id'];
+				//$this->company_id = $row['company_id'];
 				$this->company_name = $row['company_name'];
 				$this->nature_type = $row['nature_type'];
 				$this->cust_type = $row['cust_type'];
@@ -228,6 +282,11 @@ class ServiceForm extends CFormModel
                 $this->prepay_month = $row['prepay_month'];
                 $this->prepay_start = $row['prepay_start'];
                 $this->contract_no = $row['contract_no'];
+                //$this->send = $row['send'];
+                $this->lcd = $row['lcd'];
+                $this->lud = $row['lud'];
+                $this->lcu = $row['lcu'];
+                $this->luu = $row['luu'];
 //                print_r('<pre>');
 //                print_r($this);exit();
 				break;
@@ -241,6 +300,7 @@ class ServiceForm extends CFormModel
 		$connection = Yii::app()->db;
 		$transaction=$connection->beginTransaction();
 		try {
+			$this->historySave($connection);
 			$this->saveService($connection);
 			$this->updateServiceContract($connection);
 			$this->updateDocman($connection,'SERVICE');
@@ -252,6 +312,141 @@ class ServiceForm extends CFormModel
 			throw new CHttpException(404,'Cannot update.');
 		}
 	}
+
+    //获取服务操作记录
+    public static function getServiceHistoryRows($bot_id){
+        $rows = Yii::app()->db->createCommand()->select("update_html,lcu,lcd")
+            ->from("swo_service_history")
+            ->where("service_id=:service_id and service_type=1",array(":service_id"=>$bot_id))->order("lcd desc")->queryAll();
+        return $rows;
+    }
+    //哪些字段修改后需要记录
+    protected static function historyUpdateList($status){
+        $list = array(
+            'status_dt','contract_no','company_name','nature_type',
+            'cust_type','cust_type_name','product_id','paid_type','amt_paid'
+        );
+        switch ($status){
+            case "N"://新增
+                $expr = array('equip_install_dt','first_tech','first_dt','surplus','cont_info');
+                $list=array_merge($list,$expr);
+                break;
+            case "C"://续约
+                $expr = array('equip_install_dt','first_tech','first_dt','cont_info');
+                $list=array_merge($list,$expr);
+                break;
+            case "A"://更改
+                $expr = array('first_dt','b4_service','b4_product_id','b4_paid_type','b4_amt_paid','surplus');
+                $list=array_merge($list,$expr);
+                break;
+            case "S"://暂停
+                $expr = array('surplus','org_equip_qty','rtn_equip_qty');
+                $list=array_merge($list,$expr);
+                break;
+            case "R"://恢复
+                break;
+            case "T"://终止
+                $expr = array('surplus','org_equip_qty','rtn_equip_qty','surplus_edit0','all_number_edit0','surplus_edit1','all_number_edit1','surplus_edit2',
+                    'all_number_edit2','surplus_edit3','all_number_edit3');
+                $list=array_merge($list,$expr);
+                break;
+        }
+        $expr = array(
+            'salesman','othersalesman','technician',
+            'sign_dt','ctrt_period','ctrt_end_dt','need_install','amt_install',
+            'all_number','pieces','prepay_month','prepay_start'
+        );
+        $list=array_merge($list,$expr);
+        return $list;
+    }
+
+    //哪些字段修改后需要记录
+    protected static function getNameForValue($type,$value){
+        switch ($type){
+            case "first_tech_id":
+                $value = GetNameToId::getEmployeeNameForStr($value);
+                break;
+            case "othersalesman_id":
+            case "technician_id":
+            case "salesman_id":
+                $value = GetNameToId::getEmployeeNameForId($value);
+                break;
+            case "company_id":
+                $value = GetNameToId::getCompanyNameForId($value);
+                break;
+            case "nature_type":
+                $value = GetNameToId::getNatureOneNameForId($value);
+                break;
+            case "nature_type_two":
+                $value = GetNameToId::getNatureTwoNameForId($value);
+                break;
+            case "cust_type":
+                $value = GetNameToId::getCustOneNameForId($value);
+                break;
+            case "cust_type_name":
+                $value = GetNameToId::getCustTwoNameForId($value);
+                break;
+            case "product_id":
+            case "b4_product_id":
+                $value = GetNameToId::getProductNameForId($value);
+                break;
+            case "paid_type":
+            case "b4_paid_type":
+                $value = GetNameToId::getPaidTypeForId($value);
+                break;
+            case "need_install":
+                $value = GetNameToId::getNeedInstallForId($value);
+                break;
+        }
+        return $value;
+    }
+
+    protected function delHistorySave(){
+        $model = new ServiceForm();
+        $model->retrieveData($this->id);
+        $keyArr = self::historyUpdateList($model->status);
+        $delText=array();
+        $delText[]="id：".$this->id;
+        $delText[]="服务状态：".General::getStatusDesc($model->status);
+        foreach ($keyArr as $key){
+            $delText[]=$this->getAttributeLabel($key)."：".self::getNameForValue($key,$model->$key);
+        }
+        $delText= implode("<br/>",$delText);
+        $systemLogModel = new SystemLogForm();
+        $systemLogModel->log_date=date("Y/m/d H:i:s");
+        $systemLogModel->log_user=Yii::app()->user->id;
+        $systemLogModel->log_type=get_class($this);
+        $systemLogModel->log_type_name="客户服务";
+        $systemLogModel->option_str="删除";
+        $systemLogModel->option_text=$delText;
+        $systemLogModel->insertSystemLog("D");
+    }
+
+    //保存历史记录
+    protected function historySave(&$connection){
+        $uid = Yii::app()->user->id;
+        $list=array("service_id"=>$this->id,"lcu"=>$uid,"service_type"=>1,"update_type"=>1,"update_html"=>array());
+        switch ($this->getScenario()){
+            case "delete":
+                //$connection->createCommand()->delete("swo_service_history", "service_id=:id", array(":id" => $this->id));
+                $this->delHistorySave();
+                break;
+            case "edit":
+                $model = new ServiceForm();
+                $model->retrieveData($this->id);
+                $keyArr = self::historyUpdateList($model->status);
+                foreach ($keyArr as $key){
+                    if($model->$key!=$this->$key){
+                        $list["update_html"][]="<span>".$this->getAttributeLabel($key)."：".self::getNameForValue($key,$model->$key)." 修改为 ".self::getNameForValue($key,$this->$key)."</span>";
+                    }
+                }
+                if(!empty($list["update_html"])){
+                    $list["update_html"] = implode("<br/>",$list["update_html"]);
+                    $connection->createCommand()->insert("swo_service_history", $list);
+                }
+                break;
+        }
+    }
 
 	protected function updateServiceContract(&$connection) {
 		if ($this->scenario=='delete') {
