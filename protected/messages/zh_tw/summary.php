@@ -17,6 +17,8 @@ return array(
     'Start Net'=>'年初凈增長',
     'Gross'=>'滾動新生意',
     'Net'=>'滾動凈增長',
+    'None Gross'=>'新生意',
+    'None Net'=>'凈增長',
     'Enquiry'=>'查詢',
     'start date'=>'開始時間',
     'end date'=>'結束時間',
