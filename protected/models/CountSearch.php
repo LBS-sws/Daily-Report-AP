@@ -432,7 +432,7 @@ class CountSearch{
         $citySql = "";
         $textSql = "b.Text";
         if(self::$system==2){//國際版
-            $textSql = "IF(b.Text='KL' or b.Text='SL','MY',b.Text)";
+            $textSql = "IF(b.Text in ('KL','SL','JB'),'MY',b.Text)";
         }
         if(!empty($city_allow)&&$city_allow!="all"){
             $citySql = " and {$textSql} in ({$city_allow})";
@@ -549,7 +549,7 @@ class CountSearch{
         $citySql = "";
         $textSql = "b.Text";
         if(self::$system==2){//國際版
-            $textSql = "IF(b.Text='KL' or b.Text='SL','MY',b.Text)";
+            $textSql = "IF(b.Text in ('KL','SL','JB'),'MY',b.Text)";
         }
         if(!empty($city_allow)&&$city_allow!="all"){
             $citySql = " and {$textSql} in ({$city_allow})";
@@ -913,6 +913,8 @@ class CountSearch{
                 case "KL":
                     return "MY";
                 case "SL":
+                    return "MY";
+                case "JB":
                     return "MY";
             }
         }
