@@ -159,6 +159,7 @@ return array(
     'comparison_remark_15'=>'15、目标完成度（滚动新生意）=  新增金额 / 滚动新生意目标 * 100%',
     'comparison_remark_16'=>'16、目标完成度（滚动净增长）=  净增金额  / 滚动净增长目标 * 100%',
     'comparison_remark_13_new'=>'13、月停单率 = （“一次性服务+新增（产品）” + “上月一次性服务+新增产品” + 终止金额/12） / 上月服务生意额',
+    'comparison_remark_14_new'=>'14、综合停单率 = 【（终止 + 恢复 + 暂停 + 更改金额） / 12 】/ 【上月服务生意额 + （上月一次性服务+新增产品（负数））】* 100%',
 
     'staff office'=>'办事处',
     'office Name'=>'办事处名称',
@@ -203,5 +204,69 @@ return array(
     'Per Month Stop'=>'停止金额',
     'Per Month Recover'=>'净恢复金额',
     'Per Month Net'=>'净增金额',
+
+    'perMonth_remark_0'=>'计算逻辑：',
+    'perMonth_remark_1'=>'1、新增金额 =  新增(除一次性服务） +   一次性服务+新增（产品）',
+    'perMonth_remark_2'=>'2、停止金额 =  终止服务  +  上月一次性服务+新增产品',
+    'perMonth_remark_3'=>'3、净恢复金额 =  恢复服务   +  暂停服务  +  更改服务',
+    'perMonth_remark_4'=>'4、净增金额 = 新增金额  –  停止金额  +  净恢复金额',
+
+    'contract number'=>'合约数量',
+    'contract money'=>'合约总金额',
+    'contract service'=>'每月服务次数',
+
+    'monthly Actual amount'=>'每月服务生意额',
+    'monthly stop amount'=>'每月终止客户',
+    'lost order rate'=>'每月丢单率',
+    ' Year'=>'年',
+    'Per Month Count'=>'时间流失',
+    'monthly target'=>'每月目标',
+    'monthly rate'=>'目标达成',
+    'num add'=>'新增',
+    'num stop'=>'流失',
+    'num recover'=>'净恢复',
+    'num net'=>'净增',
+
+    'Capacity Region Count'=>'区域产能',
+    'Capacity Area Count'=>'地区产能',
+    ' Month Capacity'=>'月产能',
+    'month forecast'=>'整月预估',
+    'MTD'=>'MTD',
+    'YoY growth'=>'YoY growth',
+    ' month E(A)'=>'月E(A)',
+    ' month E(B)'=>'月E(B)',
+
+    'Sales productivity num'=>'销售人数',
+    'Sales productivity amt'=>'签单金额',
+    'Sales productivity rate'=>'销售月均生产率',
+    'Capacity FTE'=>'销售FTE演变',
+    'all city'=>'所有城市',
+    'MoM retention rate'=>'MoM retention rate',
+    'old now sales'=>'老销售',
+
+    'capacity_area_1'=>'1、MTD = 当月新增金额 / 销售人数',
+    'capacity_area_2'=>'2、整月预估 = 本周金额 / 上月销售人数',
+    'capacity_area_3'=>'3、销售人数取数逻辑，如果不是当月最后一天，则用上月人数',
+    'capacity_area_4'=>'例：10月30日，productivity = 10月1-30新增金额 / 9月人数，到了10月31日productivity = 10月1-31新增金额 / 10月人数，1-9月的productivity = 当月新增金额 / 当月销售人数',
+
+    'monthServiceU_1'=>'月E(A) = 当月服务生意额 / 当月1号到提交日的天数  * 当月总天数',
+    'monthServiceU_2'=>'月E(B) = 上月服务生意额 +（当月合约净销售额 + 一次性净盈亏）/ 提交天数 * 当月总天数',
+    'monthServiceU_3'=>'当月合约净销售额 =（ 新增服务(除一次性服务 ) - 终止服务 + 恢复服务 - 暂停服务 +/- 更改服务 ）/ 12',
+    'monthServiceU_4'=>'一次性净盈亏 = 当月"一次性服务+新增（产品）" 与 "上月一次性服务+新增产品" 的和',
+
+    'Capacity Staff Not'=>'不达标员工',
+    'Not money'=>'不达标金额',
+    'Download Not Sales'=>'下载不达标员工',
+    'Composite Stop Rate'=>'综合停单率',
+
+    'Budget target'=>'预算目标',
+    'Achieve budget goals'=>'达成预算目标',
+
+    'data from summary'=>'来源系统-合同分析查询',
+    'data from comparison'=>'来源系统-合同同比分析',
+    'city charge'=>'城市负责人',
+    'city charge detail'=>'地区主管需要剔除个人销售业绩后取数',
+    'employee name'=>'姓名',
+    'Update(for add)'=>'更改服务（只含新增）',
 );
 ?>

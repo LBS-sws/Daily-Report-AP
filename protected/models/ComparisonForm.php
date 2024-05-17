@@ -297,6 +297,7 @@ class ComparisonForm extends CFormModel
             "u_sum"=>0,//U系统金额
             "stopSumOnly"=>0,//本月停單金額（月）
             "monthStopRate"=>0,//月停單率
+            "comStopRate"=>0,//综合停單率
             "new_sum_last"=>0,//新增(上一年)
             "new_sum"=>0,//新增
             "new_rate"=>0,//新增对比比例
@@ -338,9 +339,15 @@ class ComparisonForm extends CFormModel
         //2023年9月改版：月停单率 = (new_sum_n+new_month_n+stop_sum/12)/last_u_actual
         if($bool){
             $list["monthStopRate"] = "-";
+            $list["comStopRate"] = "-";
         }else{
             $list["monthStopRate"] = $list["new_sum_n"]+$list["new_month_n"]+round($list["stop_sum"]/12,2);
             $list["monthStopRate"] = $this->comparisonRate($list["monthStopRate"],$list["last_u_actual"]);
+
+            $list["comStopRate"] = $list["stop_sum"]+$list["resume_sum"]+$list["pause_sum"]+$list["amend_sum"];
+            $list["comStopRate"]/= 12;//
+            $lastSum = $list["new_month_n"]+$list["last_u_actual"];
+            $list["comStopRate"] = $this->comparisonRate($list["comStopRate"],$lastSum);
         }
         $list["net_sum"]=0;
         $list["net_sum"]+=$list["new_sum"]+$list["new_sum_n"]+$list["new_month_n"];
@@ -494,6 +501,7 @@ class ComparisonForm extends CFormModel
                     array("name"=>$this->comparison_year),//查询年份
                     array("name"=>Yii::t("summary","YoY change")),//YoY change
                     array("name"=>Yii::t("summary","Month Stop Rate")),//月停单率
+                    array("name"=>Yii::t("summary","Composite Stop Rate")),//月停单率
                 )
             ),//YTD终止
             array("name"=>Yii::t("summary","YTD Resume").$monthStr,"exprName"=>$monthStr,"background"=>"#C5D9F1",
