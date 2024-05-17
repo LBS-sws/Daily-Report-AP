@@ -635,7 +635,7 @@ class ComparisonForm extends CFormModel
             "city_name","u_actual_money","new_sum_last","new_sum","new_rate",
             "new_sum_n_last","new_sum_n","new_n_rate",
             "new_month_n_last","new_month_n","new_month_rate",
-            "stop_sum_last","stop_sum","stop_rate","monthStopRate",
+            "stop_sum_last","stop_sum","stop_rate","monthStopRate","comStopRate",
             "resume_sum_last","resume_sum","resume_rate",
             "pause_sum_last","pause_sum","pause_rate",
             "amend_sum_last","amend_sum","amend_rate",
