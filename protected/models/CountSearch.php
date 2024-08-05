@@ -432,7 +432,7 @@ class CountSearch{
         $citySql = "";
         $textSql = "b.Text";
         if(self::$system==2){//國際版
-            $textSql = "IF(b.Text in ('KL','SL','JB'),'MY',b.Text)";
+            $textSql = "IF(b.Text in ('KL','SL','JB','PN'),'MY',b.Text)";
         }
         if(!empty($city_allow)&&$city_allow!="all"){
             $citySql = " and {$textSql} in ({$city_allow})";
@@ -507,7 +507,7 @@ class CountSearch{
             $city = $city_allow;
         }
         if(self::$system===2&&!empty($city)&&strpos($city,"'MY'")!==false){//國際版
-            $city.=",'KL','SL'";
+            $city.=",'KL','SL','JB','PN'";
         }
         $json = Invoice::getInvData($startDay,$endDay,$city);
         $list = array();
@@ -549,7 +549,7 @@ class CountSearch{
         $citySql = "";
         $textSql = "b.Text";
         if(self::$system==2){//國際版
-            $textSql = "IF(b.Text in ('KL','SL','JB'),'MY',b.Text)";
+            $textSql = "IF(b.Text in ('KL','SL','JB','PN'),'MY',b.Text)";
         }
         if(!empty($city_allow)&&$city_allow!="all"){
             $citySql = " and {$textSql} in ({$city_allow})";
@@ -850,7 +850,7 @@ class CountSearch{
             $city = $city_allow;
         }
         if(self::$system===2&&!empty($city)&&strpos($city,"'MY'")!==false){//國際版
-            $city.=",'KL','SL'";
+            $city.=",'KL','SL','JB','PN'";
         }
         $year = date("Y",strtotime($endDay));
         $maxMonth = date("n",strtotime($endDay));
@@ -915,6 +915,8 @@ class CountSearch{
                 case "SL":
                     return "MY";
                 case "JB":
+                    return "MY";
+                case "PN":
                     return "MY";
             }
         }
