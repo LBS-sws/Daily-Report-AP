@@ -205,7 +205,7 @@ class HistoryNetForm extends CFormModel
             "u_sum"=>0,//U系统金额
         );
         for($i=1;$i<=$this->search_month;$i++){
-            $month = $i>=10?10:"0{$i}";
+            $month = $i>=10?$i:"0{$i}";
             $dateStrOne = $this->search_year."/{$month}";//产品金额
             $dateStrTwo = $this->last_year."/{$month}";//产品金额
             $dateStrThree = "u_".$this->search_year."/{$month}";//生意额
