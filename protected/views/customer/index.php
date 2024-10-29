@@ -43,6 +43,7 @@ $this->pageTitle=Yii::app()->name . ' - Customer';
 						'cont_name',
 						'cont_phone',
 					);
+		if (!Yii::app()->user->isSingleCity()) $search[] = 'city_name';
 		$this->widget('ext.layout.ListPageWidget', array(
 			'title'=>Yii::t('customer','Customer List'),
 			'model'=>$model,
