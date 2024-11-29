@@ -244,7 +244,7 @@ class HistoryNetForm extends CFormModel
         $list["start_result"]=HistoryAddForm::comYes($list["now_week"],$list["start_two_net"]);
         $list["result"]=HistoryAddForm::comYes($list["now_week"],$list["two_net"]);
         for($i=1;$i<=$this->search_month;$i++){
-            $month = $i>=10?10:"0{$i}";
+            $month = $i>=10?$i:"0{$i}";
             $nowStr = $this->search_year."/{$month}";
             $lastStr = $this->last_year."/{$month}";
             $uStr = "u_".$this->search_year."/{$month}";
@@ -382,7 +382,7 @@ class HistoryNetForm extends CFormModel
         );
         $dateTwoList = array();
         for($i=1;$i<=$this->search_month;$i++){
-            $month = $i>=10?10:"0{$i}";
+            $month = $i>=10?$i:"0{$i}";
             $bodyKey[]=$this->last_year."/{$month}";
             $dateTwoList[]=$this->search_year."/{$month}";
             $dateThreeList[]="u_".$this->search_year."/{$month}";
